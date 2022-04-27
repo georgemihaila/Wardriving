@@ -23,26 +23,30 @@ void printAt(String text, int x, int y){
 }
 
 unsigned long lastRefreshTimestamp = 0;
-int maxFPS = 10;
+int maxFPS = 1;
 
-void printBatteryVoltage(SplashScreen splashScreen){
-    if (splashScreen.batteryVoltage == 0)
+void printBatteryVoltage(SplashScreen* splashScreen){
+    if (splashScreen->batteryVoltage == 0)
       return;
     uint16_t batteryTextColor = TFT_BLUE;
-    if (splashScreen.batteryVoltage <= 4.2){
+    if (splashScreen->batteryVoltage <= 4.2){
         batteryTextColor = TFT_WHITE;
     }
-    if (splashScreen.batteryVoltage < 3.6){
+    if (splashScreen->batteryVoltage < 3.6){
         batteryTextColor = TFT_YELLOW;
     }
-    if (splashScreen.batteryVoltage < 3.5){
+    if (splashScreen->batteryVoltage < 3.5){
         batteryTextColor = TFT_RED;
     }
-    printAt(String(splashScreen.batteryVoltage) + "V", 95, 0, 1, batteryTextColor, TFT_BLACK); 
+    printAt(String(splashScreen->batteryVoltage) + "V", 95, 0, 1, batteryTextColor, TFT_BLACK); 
 }
 
-void printOfflineMode(SplashScreen splashScreen){
-  if (splashScreen.offline){
+void printWiFiScanStats(SplashScreen* splashScreen){
+  printAt("WiFi: " + String(splashScreen->wiFiNetworksAround) + "/" + String(splashScreen->sessionWiFiNetworks), 0, 20);
+}
+
+void printOfflineMode(SplashScreen* splashScreen){
+  if (splashScreen->offline){
     printAt("offline", 0, 0);
   }
   else{
@@ -50,14 +54,20 @@ void printOfflineMode(SplashScreen splashScreen){
   }
 }
 
-void printGPSInfo(SplashScreen splashScreen){
+void printGPSInfo(SplashScreen* splashScreen){
   
 }
 
-SplashScreen lastSplashScreen;
+SplashScreen* lastSplashScreen;
 String currentAction = "";
 
-void TFTDisplay::refresh(SplashScreen splashScreen, bool limitFPS) {
+void printCurrentAction(){
+    if (!currentAction.equals("")){
+      printAt(currentAction, 0, 100);
+    }
+}
+
+void TFTDisplay::refresh(SplashScreen* splashScreen, bool limitFPS) {
     if (limitFPS){
       if (millis() - lastRefreshTimestamp < 1000 / maxFPS){ //Max FPS timer
           return;
@@ -69,9 +79,8 @@ void TFTDisplay::refresh(SplashScreen splashScreen, bool limitFPS) {
     printOfflineMode(splashScreen);
     printGPSInfo(splashScreen);
 
-    if (!currentAction.equals("")){
-      printAt(currentAction, 0, 70);
-    }
+    printCurrentAction();
+    printWiFiScanStats(splashScreen);
     
     lastRefreshTimestamp = millis();
     lastSplashScreen = splashScreen;
@@ -85,5 +94,6 @@ void TFTDisplay::printSingleString(String text) {
 void TFTDisplay::setCurrentAction(String text){
     Serial.println(text);
     currentAction = text;
-    refresh(lastSplashScreen, false);
+    //refresh(lastSplashScreen, false);
+    printCurrentAction();
 }

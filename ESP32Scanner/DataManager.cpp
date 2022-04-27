@@ -11,14 +11,14 @@
 #include "TFTDisplay.h"
 
 
-CustomSDCard _sdCard;
+CustomSDCard* _sdCard;
 bool _offline;
 String _serverName;
 HTTPClient _http;
 WiFiClient client;
 TFTDisplay* _dmdisplayref;
 
-DataManager::DataManager(CustomSDCard sdCard, TFTDisplay* display, String serverName, bool offline){
+DataManager::DataManager(CustomSDCard* sdCard, TFTDisplay* display, String serverName, bool offline){
     _sdCard = sdCard;
     _offline = offline;
     _serverName = serverName;
@@ -79,7 +79,7 @@ void DataManager::sendQueueData(String data[], int dataCount, int& lastSendIndex
       }
       if (!ok){ //Don't bother retrying now, save to SD
         _dmdisplayref->setCurrentAction(dataType + ">SD " + String(i + 1) + "/" + String(dataCount));
-        _sdCard.writeFailedSendToSDCard(dataType, data[i]);
+        _sdCard->writeFailedSendToSDCard(dataType, data[i]);
       }
     }
   }
@@ -87,7 +87,7 @@ void DataManager::sendQueueData(String data[], int dataCount, int& lastSendIndex
     //appendFile(SD, String("/" + dataType + ".log").c_str(), data.c_str());
     for (int i = lastSendIndex; i < dataCount; i++){
       _dmdisplayref->setCurrentAction(dataType + ">SD (" + String(i) + "/" + String(dataCount) + ")");
-      _sdCard.writeFailedSendToSDCard(dataType, "\"" + data[i] + "\"");
+      _sdCard->writeFailedSendToSDCard(dataType, "\"" + data[i] + "\"");
     }
     lastDataSentMs = millis();
     lastSendIndex = dataCount;
@@ -112,7 +112,7 @@ String getRandomString(int length){
 File failedDataFile;
 String dmBuffer;
 void DataManager::trySendFailedData(String dataType){
-  String filename = _sdCard.getFailedFileName(dataType);
+  String filename = _sdCard->getFailedFileName(dataType);
   failedDataFile = SD.open(filename);
   if (!failedDataFile) {
     Serial.println("Can't open " + filename);
@@ -136,11 +136,11 @@ void DataManager::trySendFailedData(String dataType){
     }
     if (totalTries == 3){
       //Completely failed
-      _sdCard.appendFile(("/completely failed " + dataType + ".log").c_str(), dmBuffer.c_str());
+      _sdCard->appendFile(("/completely failed " + dataType + ".log").c_str(), dmBuffer.c_str());
     }
   }
   failedDataFile.close();
   String randomString = getRandomString(16);
   //deleteFile(SD, filename.c_str());
-  _sdCard.renameFile(filename.c_str(), (filename + "." + randomString + ".old.log").c_str());
+  _sdCard->renameFile(filename.c_str(), (filename + "." + randomString + ".old.log").c_str());
 }

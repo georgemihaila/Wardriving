@@ -6,6 +6,9 @@ class SplashScreen{
         SplashScreen();
         double batteryVoltage;
         bool offline;
+        
+        int wiFiNetworksAround;
+        int sessionWiFiNetworks;
 };
 
 #endif
