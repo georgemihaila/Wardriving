@@ -20,7 +20,7 @@ bool CustomSDCard::init(){
 
 String buffer;
 
-String getFailedFileName(String dataType){
+String CustomSDCard::getFailedFileName(String dataType){
   return "/failed_" + dataType + ".log";
 }
 
@@ -91,4 +91,13 @@ void CustomSDCard::writeFailedSendToSDCard(String dataType, String data){
   String filename = getFailedFileName(dataType);
   String text = data;
   appendFile(filename.c_str(), text.c_str());
+}
+
+void CustomSDCard::renameFile(const char * path1, const char * path2){
+  Serial.printf("Renaming file %s to %s\n", path1, path2);
+  if (SD.rename(path1, path2)) {
+    Serial.println("File renamed");
+  } else {
+    Serial.println("Rename failed");
+  }
 }

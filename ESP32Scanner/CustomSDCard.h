@@ -1,5 +1,5 @@
-#ifndef CustomSDCard_h
-#define CustomSDCard_h
+#ifndef CustomSDCard_h_
+#define CustomSDCard_h_
 
 #include <Arduino.h>
 
@@ -12,6 +12,8 @@ class CustomSDCard {
         void appendCollectionLogFile(String dataType, String data);
         bool deleteFile(const char * path);
         void writeFailedSendToSDCard(String dataType, String data);
+        void renameFile(const char * path1, const char * path2);
+        String getFailedFileName(String dataType);
 };
 
 #endif

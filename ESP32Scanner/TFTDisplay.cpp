@@ -26,6 +26,8 @@ unsigned long lastRefreshTimestamp = 0;
 int maxFPS = 10;
 
 void printBatteryVoltage(SplashScreen splashScreen){
+    if (splashScreen.batteryVoltage == 0)
+      return;
     uint16_t batteryTextColor = TFT_BLUE;
     if (splashScreen.batteryVoltage <= 4.2){
         batteryTextColor = TFT_WHITE;
@@ -43,25 +45,45 @@ void printOfflineMode(SplashScreen splashScreen){
   if (splashScreen.offline){
     printAt("offline", 0, 0);
   }
+  else{
+    printAt("CCE_24", 0, 0);
+  }
 }
 
 void printGPSInfo(SplashScreen splashScreen){
   
 }
 
-void TFTDisplay::refresh(SplashScreen splashScreen) {
-    if (millis() - lastRefreshTimestamp >= 1000 / maxFPS){ //Max FPS timer
-        
-        tft.fillScreen(TFT_BLACK);
-        printBatteryVoltage(splashScreen);
-        printOfflineMode(splashScreen);
-        printGPSInfo(splashScreen);
+SplashScreen lastSplashScreen;
+String currentAction = "";
 
-        lastRefreshTimestamp = millis();
+void TFTDisplay::refresh(SplashScreen splashScreen, bool limitFPS) {
+    if (limitFPS){
+      if (millis() - lastRefreshTimestamp < 1000 / maxFPS){ //Max FPS timer
+          return;
+      }
     }
+
+    tft.fillScreen(TFT_BLACK);
+    printBatteryVoltage(splashScreen);
+    printOfflineMode(splashScreen);
+    printGPSInfo(splashScreen);
+
+    if (!currentAction.equals("")){
+      printAt(currentAction, 0, 70);
+    }
+    
+    lastRefreshTimestamp = millis();
+    lastSplashScreen = splashScreen;
 }
 
 void TFTDisplay::printSingleString(String text) {
     tft.fillScreen(TFT_BLACK);
     printAt(text, 0, 0);
+}
+
+void TFTDisplay::setCurrentAction(String text){
+    Serial.println(text);
+    currentAction = text;
+    refresh(lastSplashScreen, false);
 }

@@ -1,5 +1,5 @@
-#ifndef SplashScreen_h
-#define SplashScreen_h
+#ifndef SplashScreen_h_
+#define SplashScreen_h_
 
 class SplashScreen{
     public:
