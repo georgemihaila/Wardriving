@@ -4,6 +4,8 @@
 #include <SD.h>
 #include <SD_MMC.h>
 
+#include <Arduino.h>
+
 #define HSPI_MISO   27
 #define HSPI_MOSI   26
 #define HSPI_SCLK   25
@@ -14,4 +16,79 @@ bool CustomSDCard::init(){
     sdspi = new SPIClass(HSPI);
     sdspi->begin(HSPI_SCLK, HSPI_MISO, HSPI_MOSI, HSPI_SS);
     return SD.begin(HSPI_SS, *sdspi);
+}
+
+String buffer;
+
+String getFailedFileName(String dataType){
+  return "/failed_" + dataType + ".log";
+}
+
+int CustomSDCard::getNumberOfLines(String filename) {
+  File file = SD.open(filename);
+  if (!file) {
+    Serial.println("Can't open " + filename);
+    return 0;
+  }
+   int line = 0;
+   while (file.available()) {
+    line++;
+    buffer = file.readStringUntil('\n');
+  }
+  file.close();
+  return line;
+}
+
+int CustomSDCard::getNumberOfFailedDataSends(String dataType){
+  return getNumberOfLines(getFailedFileName(dataType));
+}
+
+void CustomSDCard::appendFile(const char * path, const char * message){
+    int errorCount = 0;
+    bool ok = false;
+    do{
+        File file = SD.open(path, FILE_APPEND);
+        if(!file){
+            Serial.println("Failed to open file for appending");
+            errorCount++;
+            return;
+        }
+        else{
+            if(file.println(message)){
+                errorCount = 0;
+                ok = true;
+            } 
+            else {
+                errorCount++;
+                Serial.println("Write error");
+            }
+        }
+        file.close();
+    }
+    while (!ok && errorCount < 3);
+    if (errorCount == 3){
+      Serial.println("Too many SD card errors");
+      ESP.restart();
+    }
+}
+
+void CustomSDCard::appendCollectionLogFile(String dataType, String data){
+  appendFile(String("/" + dataType + ".log").c_str(), data.c_str());
+}
+
+bool CustomSDCard::deleteFile(const char * path){
+  Serial.printf("Deleting file: %s\n", path);
+  if(SD.remove(path)){
+    Serial.println("File deleted");
+    return true;
+  } else {
+    Serial.println("Delete failed");
+    return false;
+  }
+}
+
+void CustomSDCard::writeFailedSendToSDCard(String dataType, String data){
+  String filename = getFailedFileName(dataType);
+  String text = data;
+  appendFile(filename.c_str(), text.c_str());
 }
