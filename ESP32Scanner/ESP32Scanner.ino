@@ -5,6 +5,7 @@
 #include "DataManager.h"
 #include "WiFiScanner.h"
 #include "CustomGPS.h"
+#include "BTScanner.h"
 
 #define SERVER_NAME "http://10.10.0.241:6488/"
 
@@ -15,6 +16,7 @@ CustomWiFi* _wifi;
 DataManager* _dataManager;
 WiFiScanner* _wifiScanner;
 CustomGPS* _customGPS;
+BTScanner* _btScanner;
 
 void printSingleStringToSerialAndDisplay(String text){
     Serial.println(text);
@@ -55,10 +57,11 @@ void setup() {
   }
   _dataManager = new DataManager(_card, _display, SERVER_NAME, _splashScreen->offline);
   if (!_splashScreen->offline){
-    _dataManager.createNewSession();
+    _dataManager->createNewSession();
   }
   _customGPS = new CustomGPS(_display, _splashScreen);
   _wifiScanner = new WiFiScanner(_dataManager, _customGPS, _card, _wifi, _display, _splashScreen);
+  _btScanner = new WiFiScanner(_dataManager, _customGPS, _card, _display, _splashScreen);
 }
 
 void refreshBatteryVoltage(){
@@ -73,9 +76,13 @@ void loop() {
   _display->setCurrentAction("WiFi");
   _wifiScanner->scan();
 
+  _display->setCurrentAction("BT");
+  _btScanner->scan();
+
   _customGPS->tick();
   
   if (!_splashScreen->offline){
+    _btScanner->tick();
     _wifiScanner->tick();
     //Keep WiFi up, if it disconnects give up and run in offline mode
     bool ok = _wifi->makeSureWiFiConnectionUp();

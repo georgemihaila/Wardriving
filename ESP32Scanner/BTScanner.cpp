@@ -12,33 +12,18 @@
 DataManager* _btDataManager;
 CustomGPS* _btCustomGPS;
 CustomSDCard* _btCustomCard;
-CustomWiFi* _btWifi;
 TFTDisplay* _btDisplay;
 SplashScreen* _btSplashScreen;
 
-BTScanner::BTScanner(DataManager* dataManager, CustomGPS* customGPS, CustomSDCard* sdCard, CustomWiFi* wifi, TFTDisplay* _display, SplashScreen* splashScreen){
+BTScanner::BTScanner(DataManager* dataManager, CustomGPS* customGPS, CustomSDCard* sdCard, TFTDisplay* _display, SplashScreen* splashScreen){
     _btDataManager = dataManager;
     _btCustomGPS = customGPS;
     _btCustomCard = sdCard;
-    _btWifi = wifi;
     _btDisplay = _display;
     _btSplashScreen = splashScreen;
 }
 
-char HexLookUp[] = "0123456789abcdef";
-String bssidToString(uint8_t *bssid){
-  String result;
-  for (int i = 0; i < 6; i++){
-    if (i % 2 == 1){
-      result += ":";
-    }
-    result += HexLookUp[bssid[i] >> 4];
-    result += HexLookUp[bssid[i] & 0x0F];
-  }
-  return result;
-}
-
-bool addDeviceToListIfNewAndSendDataIfQueueFull(String (&collectedDevices)[COLLECT_UNIQUE_SIZE], int& collectedDeviceCount, int& sessionDevices, String deviceData, String deviceType, void (&sendFunction)()){
+bool addBTDeviceToListIfNewAndSendDataIfQueueFull(String (&collectedDevices)[COLLECT_UNIQUE_SIZE], int& collectedDeviceCount, int& sessionDevices, String deviceData, String deviceType, void (&sendFunction)()){
   for (int i = 0; i < collectedDeviceCount; i++){
     if (collectedDevices[i].equals(deviceData)){
       return false;
@@ -55,14 +40,14 @@ bool addDeviceToListIfNewAndSendDataIfQueueFull(String (&collectedDevices)[COLLE
   return true;
 }
 
-int wsSessionBTNetworks = 0;
+int btSessionBTDevices = 0;
 String collectedBTDevices[COLLECT_UNIQUE_SIZE];
 int collectedBTDeviceCount = 0;
 
 long lastBTDataSentMs = 0;
 int lastBTSendIndex = 0;
 
-void sendQueueData(String data[], int dataCount, int& lastSendIndex, long& lastDataSentMs, String path, String dataType, long maxTimeAllowedBeforeCachingMs){
+void sendBTQueueData(String data[], int dataCount, int& lastSendIndex, long& lastDataSentMs, String path, String dataType, long maxTimeAllowedBeforeCachingMs){
   bool connected = _btWifi->makeSureWiFiConnectionUp();
   if (lastSendIndex > dataCount) //Queue has filled in the meantime
   {
@@ -103,18 +88,18 @@ void sendQueueData(String data[], int dataCount, int& lastSendIndex, long& lastD
 }
 
 void sendBTData(){
-  sendQueueData(collectedBTDevices, collectedBTDeviceCount, lastBTSendIndex, lastBTDataSentMs, "WiFi/ProcessRawString", "WiFi", TIME_BEFORE_FORCE_CACHE);
+  sendBTQueueData(collectedBTDevices, collectedBTDeviceCount, lastBTSendIndex, lastBTDataSentMs, "WiFi/ProcessRawString", "WiFi", TIME_BEFORE_FORCE_CACHE);
 }
 
 bool addBTDeviceIfNewAndSendDataIfQueueFull(String data){
-  return addDeviceToListIfNewAndSendDataIfQueueFull(collectedBTDevices, collectedBTDeviceCount, wsSessionBTNetworks, data, "WiFi", sendBTData);
+  return addBTDeviceToListIfNewAndSendDataIfQueueFull(collectedBTDevices, collectedBTDeviceCount, btSessionBTDevices, data, "WiFi", sendBTData);
 }
 
 void BTScanner::scan(){
   /*
-    int n = WiFi.scanNetworks();
-    _btSplashScreen->wiFiNetworksAround = n;
-    int newNetworks = 0;
+    int n = WiFi.scanDevices();
+    _btSplashScreen->wiFiDevicesAround = n;
+    int newDevices = 0;
     for (int i = 0; i < n; ++i) {
             String data = String(WiFi.SSID(i));
             data += "," + String(WiFi.encryptionType(i));
@@ -122,13 +107,13 @@ void BTScanner::scan(){
             data += "," + String(bssidToString(WiFi.BSSID(i)));
             data += "," + _btCustomGPS->generateLocationCSV();
             if (addBTDeviceIfNewAndSendDataIfQueueFull(data)){
-              newNetworks++;
-              _btSplashScreen->sessionBTNetworks++;
+              newDevices++;
+              _btSplashScreen->sessionBTDevices++;
               _btCustomCard->appendCollectionLogFile("WiFi", data);
         }
     }
-    _btSplashScreen->appendLatestWifiNetworkCount(_btSplashScreen->wiFiNetworksAround);
-    _btSplashScreen->newWiFiNetworks = newNetworks;
+    _btSplashScreen->appendLatestWifiNetworkCount(_btSplashScreen->wiFiDevicesAround);
+    _btSplashScreen->newWiFiDevices = newDevices;
     */
 }
 #define BT_SEND_DATA_EVERY_MS 10000

@@ -10,7 +10,7 @@
 
 class BTScanner : ScannerBase {
     public:
-        BTScanner(DataManager* dataManager, CustomGPS* customGPS, CustomSDCard* sdCard, CustomWiFi* wifi, TFTDisplay* _display, SplashScreen* splashScreen);
+        BTScanner(DataManager* dataManager, CustomGPS* customGPS, CustomSDCard* sdCard, TFTDisplay* _display, SplashScreen* splashScreen);
         void scan();
         void tick();
 };
