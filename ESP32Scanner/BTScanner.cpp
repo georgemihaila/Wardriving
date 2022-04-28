@@ -6,6 +6,11 @@
 #include "CustomWiFi.h"
 #include "TFTDisplay.h"
 
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEScan.h>
+#include <BLEAdvertisedDevice.h>
+
 #define TIME_BEFORE_FORCE_CACHE 30000
 #define COLLECT_UNIQUE_SIZE 250
 
@@ -16,14 +21,7 @@ TFTDisplay* _btDisplay;
 SplashScreen* _btSplashScreen;
 CustomWiFi* _btWifi;
 
-BTScanner::BTScanner(DataManager* dataManager, CustomGPS* customGPS, CustomSDCard* sdCard, CustomWiFi* wifi, TFTDisplay* _display, SplashScreen* splashScreen){
-    _btDataManager = dataManager;
-    _btCustomGPS = customGPS;
-    _btCustomCard = sdCard;
-    _btWifi = wifi;
-    _btDisplay = _display;
-    _btSplashScreen = splashScreen;
-}
+BLEScan* pBLEScan;
 
 bool addBTDeviceToListIfNewAndSendDataIfQueueFull(String (&collectedDevices)[COLLECT_UNIQUE_SIZE], int& collectedDeviceCount, int& sessionDevices, String deviceData, String deviceType, void (&sendFunction)()){
   for (int i = 0; i < collectedDeviceCount; i++){
@@ -90,41 +88,76 @@ void sendBTQueueData(String data[], int dataCount, int& lastSendIndex, long& las
 }
 
 void sendBTData(){
-  sendBTQueueData(collectedBTDevices, collectedBTDeviceCount, lastBTSendIndex, lastBTDataSentMs, "WiFi/ProcessRawString", "WiFi", TIME_BEFORE_FORCE_CACHE);
+  sendBTQueueData(collectedBTDevices, collectedBTDeviceCount, lastBTSendIndex, lastBTDataSentMs, "Bluetooth/ProcessRawString", "Bluetooth", TIME_BEFORE_FORCE_CACHE);
 }
 
 bool addBTDeviceIfNewAndSendDataIfQueueFull(String data){
-  return addBTDeviceToListIfNewAndSendDataIfQueueFull(collectedBTDevices, collectedBTDeviceCount, btSessionBTDevices, data, "WiFi", sendBTData);
+  return addBTDeviceToListIfNewAndSendDataIfQueueFull(collectedBTDevices, collectedBTDeviceCount, btSessionBTDevices, data, "Bluetooth", sendBTData);
+}
+
+int quickBTScanTime = 1;
+int deepBTScanTime = 1;
+int quickBTScans = 0;
+
+int scanTime = 1; //In seconds
+
+int bluetoothDevicesCount[128];
+int currentBluetoothScanCount = 0;
+
+class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
+    void onResult(BLEAdvertisedDevice advertisedDevice) {
+      String data = _btCustomGPS->generateLocationCSV() + "," + String(advertisedDevice.toString().c_str());
+      if (addBTDeviceIfNewAndSendDataIfQueueFull(data)){
+        _btSplashScreen->newBTDevices++;
+      }
+      currentBluetoothScanCount++;
+      _btSplashScreen->btDevicesAround++;
+    }
+};
+
+int getBTScanTime(){
+  if (++quickBTScans > 5){
+    quickBTScans = 0;
+    return deepBTScanTime;
+  }
+  else{
+    return quickBTScanTime;
+  }
 }
 
 void BTScanner::scan(){
-  /*
-    int n = WiFi.scanDevices();
-    _btSplashScreen->wiFiDevicesAround = n;
-    int newDevices = 0;
-    for (int i = 0; i < n; ++i) {
-            String data = String(WiFi.SSID(i));
-            data += "," + String(WiFi.encryptionType(i));
-            data += "," + String(WiFi.channel(i));
-            data += "," + String(bssidToString(WiFi.BSSID(i)));
-            data += "," + _btCustomGPS->generateLocationCSV();
-            if (addBTDeviceIfNewAndSendDataIfQueueFull(data)){
-              newDevices++;
-              _btSplashScreen->sessionBTDevices++;
-              _btCustomCard->appendCollectionLogFile("WiFi", data);
-        }
-    }
-    _btSplashScreen->appendLatestWifiNetworkCount(_btSplashScreen->wiFiDevicesAround);
-    _btSplashScreen->newWiFiDevices = newDevices;
-    */
+  int btScanTime = getBTScanTime();
+  _btDisplay->setCurrentAction("Bluetooth");
+  currentBluetoothScanCount = 0;
+  _btSplashScreen->newBTDevices = 0;
+  _btSplashScreen->btDevicesAround = 0;
+  BLEScanResults foundDevices = pBLEScan->start(btScanTime, false);
+  pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory
+  _btSplashScreen->appendLatestBTCount(_btSplashScreen->btDevicesAround);
 }
 #define BT_SEND_DATA_EVERY_MS 10000
 
 void BTScanner::tick(){
   if (millis() - lastBTDataSentMs > BT_SEND_DATA_EVERY_MS){ //Enough time elapsed for an autosend
     if (lastBTSendIndex < collectedBTDeviceCount){ //New WiFi devices added since last send
-      _btDisplay->setCurrentAction("WiFi autosend");
+      _btDisplay->setCurrentAction("BT autosend");
       sendBTData();
     }
   }
+}
+
+BTScanner::BTScanner(DataManager* dataManager, CustomGPS* customGPS, CustomSDCard* sdCard, CustomWiFi* wifi, TFTDisplay* _display, SplashScreen* splashScreen){
+    _btDataManager = dataManager;
+    _btCustomGPS = customGPS;
+    _btCustomCard = sdCard;
+    _btWifi = wifi;
+    _btDisplay = _display;
+    _btSplashScreen = splashScreen;
+
+    BLEDevice::init("ESP32 Scanner");
+    pBLEScan = BLEDevice::getScan(); //create new scan
+    pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
+    pBLEScan->setActiveScan(true); //active scan uses more power, but get results faster
+    pBLEScan->setInterval(100);
+    pBLEScan->setWindow(99);  // less or equal setInterval value
 }

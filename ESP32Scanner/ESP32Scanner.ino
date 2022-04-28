@@ -36,6 +36,7 @@ void setup() {
   Serial.println("Init display");
   _display = new TFTDisplay();
   _display->init();
+  _display->clear();
   if (getVoltage() < 3.4){
     printSingleStringToSerialAndDisplay("Low battery");
     delay(1000);
@@ -76,7 +77,7 @@ void loop() {
   _display->setCurrentAction("WiFi");
   _wifiScanner->scan();
 
-  _display->setCurrentAction("BT");
+  _display->setCurrentAction("Bluetooth");
   _btScanner->scan();
 
   _customGPS->tick();

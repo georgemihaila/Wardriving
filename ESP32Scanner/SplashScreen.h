@@ -15,6 +15,9 @@ class SplashScreen{
         int latestWiFiNetworkCount[135];
         void appendLatestWifiNetworkCount(int count);
 
+        int btDevicesAround;
+        int newBTDevices;
+        int sessionBTDevices;
         int latestBTCount[135];
         void appendLatestBTCount(int count);
 

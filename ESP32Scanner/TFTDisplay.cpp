@@ -97,6 +97,10 @@ void printWiFiScanStats(SplashScreen* splashScreen){
   printAt("WiFi: " + String(splashScreen->newWiFiNetworks) + "/" +  String(splashScreen->wiFiNetworksAround) + "/" + String(splashScreen->sessionWiFiNetworks), 0, 20);
 }
 
+void printBTScanStats(SplashScreen* splashScreen){
+  printAt("BT:   " + String(splashScreen->newBTDevices) + "/" +  String(splashScreen->btDevicesAround) + "/" + String(splashScreen->sessionBTDevices), 0, 40);
+}
+
 void printOfflineMode(SplashScreen* splashScreen){
   if (splashScreen->offline){
     printAt("offline", 0, 0);
@@ -122,7 +126,7 @@ void printGPSInfo(SplashScreen* splashScreen){
     if (splashScreen->nSatellites >= 4){
       color = TFT_WHITE;
     }
-    printAt("GPS:  " + String(splashScreen->nSatellites), 0, 40, 1, color, TFT_BLACK);
+    printAt("GPS:  " + String(splashScreen->nSatellites), 0, 60, 1, color, TFT_BLACK);
   }
 }
 
@@ -149,6 +153,7 @@ void TFTDisplay::refresh(SplashScreen* splashScreen, bool limitFPS) {
 
     printCurrentAction();
     printWiFiScanStats(splashScreen);
+    printBTScanStats(splashScreen);
 
     dualLineGraphCentered(splashScreen->latestWiFiNetworkCount, splashScreen->latestBTCount);
     printLastLoopTime(splashScreen);

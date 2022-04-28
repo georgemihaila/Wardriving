@@ -6,6 +6,10 @@ SplashScreen::SplashScreen(){
   gpsHeardFrom = false;
   nSatellites = 0; 
   newWiFiNetworks = 0;
+
+  btDevicesAround = 0;
+  newBTDevices = 0;
+  sessionBTDevices = 0;
   
   wiFiNetworksAround = 0;
   sessionWiFiNetworks = 0;
