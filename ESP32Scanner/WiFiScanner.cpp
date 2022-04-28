@@ -6,7 +6,7 @@
 #include "CustomWiFi.h"
 #include "TFTDisplay.h"
 
-#define TIME_BEFORE_FORCE_CACHE 1000
+#define TIME_BEFORE_FORCE_CACHE 30000
 #define COLLECT_UNIQUE_SIZE 100
 
 DataManager* _wsDataManager;
@@ -89,13 +89,15 @@ void sendQueueData(String data[], int dataCount, int& lastSendIndex, long& lastD
       }
     }
   }
-    Serial.println("Fast WiFi not available, saving data to SD card");
+ else{
+    Serial.println("WiFi not available, saving data to SD card");
     //appendFile(SD, String("/" + dataType + ".log").c_str(), data.c_str());
     for (int i = lastSendIndex; i < dataCount; i++){
       _wsDisplay->setCurrentAction(dataType + ">SD (" + String(i) + "/" + String(dataCount) + ")");
       _wsCustomCard->writeFailedSendToSDCard(dataType, "\"" + data[i] + "\"");
     }
     
+ }
     lastDataSentMs = millis();
     lastSendIndex = dataCount;
 }
@@ -119,13 +121,15 @@ void WiFiScanner::scan(){
             data += "," + String(bssidToString(WiFi.BSSID(i)));
             data += "," + _wsCustomGPS->generateLocationCSV();
             if (addWiFiDeviceIfNewAndSendDataIfQueueFull(data)){
-            newNetworks++;
-            _wsSplashScreen->sessionWiFiNetworks++;
-            _wsCustomCard->appendCollectionLogFile("WiFi", data);
+              newNetworks++;
+              _wsSplashScreen->sessionWiFiNetworks++;
+              _wsCustomCard->appendCollectionLogFile("WiFi", data);
         }
     }
+    _wsSplashScreen->appendLatestWifiNetworkCount(n);
+    _wsSplashScreen->newWiFiNetworks = newNetworks;
 }
-#define WIFI_SEND_DATA_EVERY_MS 10000
+#define WIFI_SEND_DATA_EVERY_MS 30000
 
 void WiFiScanner::tick(){
   if (millis() - lastWiFiDataSentMs > WIFI_SEND_DATA_EVERY_MS){ //Enough time elapsed for an autosend

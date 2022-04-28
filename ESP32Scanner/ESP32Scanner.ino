@@ -54,7 +54,7 @@ void setup() {
     _splashScreen->offline = true;
   }
   _dataManager = new DataManager(_card, _display, SERVER_NAME, _splashScreen->offline);
-  _customGPS = new CustomGPS();
+  _customGPS = new CustomGPS(_display, _splashScreen);
   _wifiScanner = new WiFiScanner(_dataManager, _customGPS, _card, _wifi, _display, _splashScreen);
 }
 
@@ -62,13 +62,16 @@ void refreshBatteryVoltage(){
   _splashScreen->batteryVoltage = getVoltage();
 }
 
+unsigned long lastLoopTimestamp = 0;
+
 void loop() {
   refreshBatteryVoltage();
-  _display->refresh(_splashScreen, true);
 
   _display->setCurrentAction("WiFi");
   _wifiScanner->scan();
 
+  _customGPS->tick();
+  
   if (!_splashScreen->offline){
     _wifiScanner->tick();
     //Keep WiFi up, if it disconnects give up and run in offline mode
@@ -77,4 +80,8 @@ void loop() {
       _splashScreen->offline = true;
     }
   }
+  
+  _display->refresh(_splashScreen, false);
+  _splashScreen->lastLoopTimeMs = millis() - lastLoopTimestamp;
+  lastLoopTimestamp = millis();
 }

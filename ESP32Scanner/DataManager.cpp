@@ -83,14 +83,16 @@ void DataManager::sendQueueData(String data[], int dataCount, int& lastSendIndex
       }
     }
   }
- Serial.println("Fast WiFi not available, saving data to SD card");
+  else {
+    Serial.println("WiFi not available, saving data to SD card");
     //appendFile(SD, String("/" + dataType + ".log").c_str(), data.c_str());
     for (int i = lastSendIndex; i < dataCount; i++){
       _dmdisplayref->setCurrentAction(dataType + ">SD (" + String(i) + "/" + String(dataCount) + ")");
       _sdCard->writeFailedSendToSDCard(dataType, "\"" + data[i] + "\"");
     }
-    lastDataSentMs = millis();
-    lastSendIndex = dataCount;
+  }
+  lastDataSentMs = millis();
+  lastSendIndex = dataCount;
 }
 
 char getRandomChar(){
