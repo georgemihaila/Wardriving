@@ -57,6 +57,9 @@ void CustomSDCard::appendFile(const char * path, const char * message){
             if(file.println(message)){
                 errorCount = 0;
                 ok = true;
+                Serial.print(message);
+                Serial.print(" > ");
+                Serial.println(path);
             } 
             else {
                 errorCount++;

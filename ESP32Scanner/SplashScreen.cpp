@@ -1,34 +1,23 @@
 #include "SplashScreen.h"
 #include "Arduino.h"
 
-double batteryVoltage;
-bool offline;
-int wiFiNetworksAround;
-int sessionWiFiNetworks;
-bool gpsHeardFrom;
-int nSatellites;
-int latestWiFiNetworkCount[135];
-int latestBTCount[135];
-int newWiFiNetworks = 0;
-
-unsigned long lastLoopTimeMs;
-
 SplashScreen::SplashScreen(){
   offline = true;
   gpsHeardFrom = false;
   nSatellites = 0; 
+  newWiFiNetworks = 0;
   
   wiFiNetworksAround = 0;
   sessionWiFiNetworks = 0;
 
-  for(int i = 0; i < 135 - 1; i++){
+  for(int i = 0; i < 135; i++){
     latestWiFiNetworkCount[i] = 0;
     latestBTCount[i] = 0;
   }
 }
 
 void appendLastElement(int (&data)[135], int entry){
-  data[127] = entry;
+  data[134] = entry;
   for(int i = 0; i < 134; i++){
     data[i] = data[i + 1];
   } 

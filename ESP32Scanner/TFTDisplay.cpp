@@ -25,7 +25,6 @@ void graph(int data[], int count, int yOffset, bool invertVertically, int min, i
       y1 = graphBottom - height;
     }
     tft.drawLine(i, y1, i, y1 + h1, TFT_WHITE);
-    //display.drawLine();
   }
 }
 
@@ -95,7 +94,7 @@ void printBatteryVoltage(SplashScreen* splashScreen){
 }
 
 void printWiFiScanStats(SplashScreen* splashScreen){
-  printAt("WiFi: " + String(splashScreen->wiFiNetworksAround) + "/" + String(splashScreen->sessionWiFiNetworks), 0, 20);
+  printAt("WiFi: " + String(splashScreen->newWiFiNetworks) + "/" +  String(splashScreen->wiFiNetworksAround) + "/" + String(splashScreen->sessionWiFiNetworks), 0, 20);
 }
 
 void printOfflineMode(SplashScreen* splashScreen){
@@ -108,7 +107,7 @@ void printOfflineMode(SplashScreen* splashScreen){
 }
 
 void printLastLoopTime(SplashScreen* splashScreen){
-  printAt(String(splashScreen->lastLoopTimeMs) + "ms", TFT_WIDTH - 50, TFT_HEIGHT - 20);
+  printAt(String(splashScreen->lastLoopTimeMs) + "ms", 0, TFT_HEIGHT - 20);
 }
 
 void printGPSInfo(SplashScreen* splashScreen){
@@ -143,7 +142,7 @@ void TFTDisplay::refresh(SplashScreen* splashScreen, bool limitFPS) {
       }
     }
 
-    tft.fillScreen(TFT_BLACK);
+    clear();
     printBatteryVoltage(splashScreen);
     printOfflineMode(splashScreen);
     printGPSInfo(splashScreen);
@@ -168,4 +167,8 @@ void TFTDisplay::setCurrentAction(String text){
     currentAction = text;
     //refresh(lastSplashScreen, false);
     printCurrentAction();
+}
+
+void TFTDisplay::clear(){
+  tft.fillScreen(TFT_BLACK);
 }

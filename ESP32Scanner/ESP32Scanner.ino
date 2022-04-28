@@ -54,6 +54,9 @@ void setup() {
     _splashScreen->offline = true;
   }
   _dataManager = new DataManager(_card, _display, SERVER_NAME, _splashScreen->offline);
+  if (!_splashScreen->offline){
+    _dataManager.createNewSession();
+  }
   _customGPS = new CustomGPS(_display, _splashScreen);
   _wifiScanner = new WiFiScanner(_dataManager, _customGPS, _card, _wifi, _display, _splashScreen);
 }

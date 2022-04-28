@@ -56,6 +56,25 @@ bool DataManager::postData(String data, String dataType){
     return ok;
 }
 
+void DataManager::createNewSession(){
+    String serverPath = _serverName + "Session/CreateNewSession";
+    _http.begin(client, serverPath);
+    _http.addHeader("Content-Type", "application/json");
+    String message = "{}";
+    int httpResponseCode = _http.POST(message);
+    if (httpResponseCode == 201) {
+      //All good
+      Serial.println("Created new session");
+    }
+    else if (httpResponseCode < 0){ //ESP error?
+    }
+    else {
+      Serial.print("HTTP response code: ");
+      Serial.println(httpResponseCode);
+    }
+    _http.end();
+}
+
 void DataManager::sendQueueData(String data[], int dataCount, int& lastSendIndex, long& lastDataSentMs, String path, String dataType, long maxTimeAllowedBeforeCachingMs){
   bool connected = !_offline;
   if (lastSendIndex > dataCount) //Queue has filled in the meantime

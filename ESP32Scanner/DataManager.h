@@ -13,6 +13,7 @@ class DataManager {
         bool postData(String data, String dataType);
         void sendQueueData(String data[], int dataCount, int& lastSendIndex, long& lastDataSentMs, String path, String dataType, long maxTimeAllowedBeforeCachingMs);
         void trySendFailedData(String dataType);
+        void createNewSession();
 };
 
 #endif

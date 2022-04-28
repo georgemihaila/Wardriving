@@ -7,6 +7,7 @@
 class TFTDisplay {
     public:
         void init();
+        void clear();
         void refresh(SplashScreen* splashScreen, bool limitFPS);
         void printSingleString(String text);
         void setCurrentAction(String text);
