@@ -14,11 +14,13 @@ CustomGPS* _btCustomGPS;
 CustomSDCard* _btCustomCard;
 TFTDisplay* _btDisplay;
 SplashScreen* _btSplashScreen;
+CustomWiFi* _btWifi;
 
-BTScanner::BTScanner(DataManager* dataManager, CustomGPS* customGPS, CustomSDCard* sdCard, TFTDisplay* _display, SplashScreen* splashScreen){
+BTScanner::BTScanner(DataManager* dataManager, CustomGPS* customGPS, CustomSDCard* sdCard, CustomWiFi* wifi, TFTDisplay* _display, SplashScreen* splashScreen){
     _btDataManager = dataManager;
     _btCustomGPS = customGPS;
     _btCustomCard = sdCard;
+    _btWifi = wifi;
     _btDisplay = _display;
     _btSplashScreen = splashScreen;
 }

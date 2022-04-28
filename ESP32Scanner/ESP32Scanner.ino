@@ -61,7 +61,7 @@ void setup() {
   }
   _customGPS = new CustomGPS(_display, _splashScreen);
   _wifiScanner = new WiFiScanner(_dataManager, _customGPS, _card, _wifi, _display, _splashScreen);
-  _btScanner = new WiFiScanner(_dataManager, _customGPS, _card, _display, _splashScreen);
+  _btScanner = new BTScanner(_dataManager, _customGPS, _card, _wifi, _display, _splashScreen);
 }
 
 void refreshBatteryVoltage(){
