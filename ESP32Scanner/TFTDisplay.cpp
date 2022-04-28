@@ -133,9 +133,12 @@ void printGPSInfo(SplashScreen* splashScreen){
 SplashScreen* lastSplashScreen;
 String currentAction = "";
 
+#define CURRENT_ACTION_Y 100
+
 void printCurrentAction(){
     if (!currentAction.equals("")){
-      printAt(currentAction, 0, 100);
+      tft.fillRect(0, CURRENT_ACTION_Y, TFT_WIDTH - 1, 20 * (1 + (currentAction.length() / 18)), TFT_BLACK);
+      printAt(currentAction, 0, CURRENT_ACTION_Y);
     }
 }
 

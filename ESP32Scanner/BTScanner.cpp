@@ -107,8 +107,10 @@ int currentBluetoothScanCount = 0;
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
     void onResult(BLEAdvertisedDevice advertisedDevice) {
       String data = _btCustomGPS->generateLocationCSV() + "," + String(advertisedDevice.toString().c_str());
+      _btCustomGPS->yield();
       if (addBTDeviceIfNewAndSendDataIfQueueFull(data)){
         _btSplashScreen->newBTDevices++;
+        _btSplashScreen->sessionBTDevices++;
       }
       currentBluetoothScanCount++;
       _btSplashScreen->btDevicesAround++;
@@ -127,7 +129,6 @@ int getBTScanTime(){
 
 void BTScanner::scan(){
   int btScanTime = getBTScanTime();
-  _btDisplay->setCurrentAction("Bluetooth");
   currentBluetoothScanCount = 0;
   _btSplashScreen->newBTDevices = 0;
   _btSplashScreen->btDevicesAround = 0;

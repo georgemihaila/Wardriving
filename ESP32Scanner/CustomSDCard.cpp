@@ -91,6 +91,14 @@ bool CustomSDCard::deleteFile(const char * path){
 }
 
 void CustomSDCard::writeFailedSendToSDCard(String dataType, String data){
+  /*
+  if (dataType.equals("Bluetooth")){
+      _sdSplashScreen->sessionBTDevices++;
+  }
+  else if (dataType.equals("WiFi")){
+      _sdSplashScreen->sessionWiFiNetworks++;
+  }
+  */
   String filename = getFailedFileName(dataType);
   String text = data;
   appendFile(filename.c_str(), text.c_str());

@@ -16,6 +16,33 @@ SoftwareSerial gpsPort;
 TFTDisplay* gpsDisplayRef;
 SplashScreen* gpsSplashScreenRef;
 
+void sendPacket(byte *packet, byte len) {
+ for (byte i = 0; i < len; i++)
+ {
+ gpsPort.write(packet[i]); // GPS is HardwareSerial
+ }
+}
+
+void changeFrequency() {
+    byte packet[] = {
+        0xB5, // 
+        0x62, // 
+        0x06, // 
+        0x08, // 
+        0x06, // length
+        0x00, // 
+        0xFA, // measRate, hex 64 = dec 100 ms
+        0x00, // 
+        0x01, // navRate, always =1
+        0x00, // 
+        0x01, // timeRef, stick to GPS time (=1)
+        0x00, // 
+        0x7A, // CK_A
+        0x12, // CK_B
+    };
+    sendPacket(packet, sizeof(packet));
+}
+
 CustomGPS::CustomGPS(TFTDisplay* display, SplashScreen* splashScreen){
   gpsDisplayRef = display;
   gpsSplashScreenRef = splashScreen;
@@ -26,13 +53,13 @@ CustomGPS::CustomGPS(TFTDisplay* display, SplashScreen* splashScreen){
       delay (1000);
       ESP.restart();
   } 
+   changeFrequency();
 }
 
 String CustomGPS::generateLocationCSV(){
   return gpsSplashScreenRef->longitude + "," + gpsSplashScreenRef->latitude + "," + gpsSplashScreenRef->altitude;
 }
 
-#define GPS_UPDATE_MS 1000
 long lastGPSUpdateMs = 0;
 
 void gpsDelay(unsigned long ms)
@@ -54,6 +81,7 @@ void gpsDelay(unsigned long ms)
 
 void GPSUpdate(){
     gpsDisplayRef->setCurrentAction("GPS");
+    gpsDelay(1500);
     bool updated = false;
     if (gps.location.isUpdated()){
       String latitude = String(gps.location.lat());
@@ -71,6 +99,10 @@ void GPSUpdate(){
     if (updated){
       Serial.println("Longitude: " + gpsSplashScreenRef->longitude + "\nLatitude: " + gpsSplashScreenRef->latitude + "\nAltitude: " + gpsSplashScreenRef->altitude);
     }
+}
+
+void CustomGPS::yield(){
+  gpsDelay(0);
 }
 
 void CustomGPS::tick(){

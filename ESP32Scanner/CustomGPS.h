@@ -9,6 +9,7 @@ class CustomGPS {
         CustomGPS(TFTDisplay* display, SplashScreen* splashScreen);
         String generateLocationCSV();
         void tick();
+        void yield();
 };
 
 #endif

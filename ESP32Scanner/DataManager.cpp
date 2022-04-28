@@ -29,6 +29,26 @@ void DataManager::setOfflineMode(bool offline){
     _offline = offline;
 }
 
+
+char getRandomChar(){
+   byte randomValue = random(0, 37);
+   char letter = randomValue + 'a';
+   if(randomValue > 26)
+      letter = (randomValue - 26) + '0';
+   return letter;
+}
+
+String getRandomString(int length){
+  String result = "";
+  for(int i = 0; i < length; i++){
+    result += getRandomChar();
+  }
+  return result;
+}
+
+File dmFailedDataFile;
+String dmBuffer;
+
 bool DataManager::postData(String data, String dataType){
     bool ok = false;
     String serverPath = _serverName + dataType + "/ProcessRawString";
@@ -114,36 +134,18 @@ void DataManager::sendQueueData(String data[], int dataCount, int& lastSendIndex
   lastSendIndex = dataCount;
 }
 
-char getRandomChar(){
-   byte randomValue = random(0, 37);
-   char letter = randomValue + 'a';
-   if(randomValue > 26)
-      letter = (randomValue - 26) + '0';
-   return letter;
-}
-
-String getRandomString(int length){
-  String result = "";
-  for(int i = 0; i < length; i++){
-    result += getRandomChar();
-  }
-  return result;
-}
-
-File failedDataFile;
-String dmBuffer;
 void DataManager::trySendFailedData(String dataType){
   String filename = _sdCard->getFailedFileName(dataType);
-  failedDataFile = SD.open(filename);
-  if (!failedDataFile) {
+  dmFailedDataFile = SD.open(filename);
+  if (!dmFailedDataFile) {
     Serial.println("Can't open " + filename);
     return;
   }
    int line = 0;
-   while (failedDataFile.available()) {
+   while (dmFailedDataFile.available()) {
     line++;
     _dmdisplayref->setCurrentAction("Failed " + dataType + " (" + line + ")");
-    dmBuffer = failedDataFile.readStringUntil('\n');
+    dmBuffer = dmFailedDataFile.readStringUntil('\n');
     Serial.println(dmBuffer);
     int totalTries = 0;
     while (totalTries++ < 3){
@@ -160,7 +162,7 @@ void DataManager::trySendFailedData(String dataType){
       _sdCard->appendFile(("/completely failed " + dataType + ".log").c_str(), dmBuffer.c_str());
     }
   }
-  failedDataFile.close();
+  dmFailedDataFile.close();
   String randomString = getRandomString(16);
   //deleteFile(SD, filename.c_str());
   _sdCard->renameFile(filename.c_str(), (filename + "." + randomString + ".old.log").c_str());

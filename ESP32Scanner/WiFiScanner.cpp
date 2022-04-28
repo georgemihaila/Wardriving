@@ -115,6 +115,7 @@ void WiFiScanner::scan(){
     _wsSplashScreen->wiFiNetworksAround = n;
     int newNetworks = 0;
     for (int i = 0; i < n; ++i) {
+            _wsCustomGPS->yield();
             String data = String(WiFi.SSID(i));
             data += "," + String(WiFi.encryptionType(i));
             data += "," + String(WiFi.channel(i));

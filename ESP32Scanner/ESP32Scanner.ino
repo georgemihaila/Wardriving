@@ -51,7 +51,6 @@ void setup() {
   _wifi = new CustomWiFi(_display);
   if (_wifi->initWiFi(0)){
     _splashScreen->offline = false;
-    
   }
   else{
     _splashScreen->offline = true;
@@ -59,6 +58,12 @@ void setup() {
   _dataManager = new DataManager(_card, _display, SERVER_NAME, _splashScreen->offline);
   if (!_splashScreen->offline){
     _dataManager->createNewSession();
+    _dataManager->trySendFailedData("Bluetooth");
+    _dataManager->trySendFailedData("WiFi");
+  }
+  else{
+    _splashScreen->sessionWiFiNetworks = _card->getNumberOfFailedDataSends("WiFi");
+    _splashScreen->sessionBTDevices = _card->getNumberOfFailedDataSends("Bluetooth");
   }
   _customGPS = new CustomGPS(_display, _splashScreen);
   _wifiScanner = new WiFiScanner(_dataManager, _customGPS, _card, _wifi, _display, _splashScreen);
