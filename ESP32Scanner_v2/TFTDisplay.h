@@ -2,6 +2,7 @@
 #define TFTDisplay_h_
 
 #include <TFT_eSPI.h>
+#include <SPI.h>
 #include "Page.h"
 
 class TFTDisplay {

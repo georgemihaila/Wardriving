@@ -9,6 +9,7 @@
 TFTDisplay::TFTDisplay(){
   _tft = new TFT_eSPI();
   _tft->init();
+  _tft->setTextFont(2);
   clear();
 }
 

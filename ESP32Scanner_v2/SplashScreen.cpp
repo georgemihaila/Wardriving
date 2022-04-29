@@ -3,5 +3,5 @@
 #include <TFT_eSPI.h>
 
 SplashScreen::SplashScreen(){
-  addChunk(new BatteryChunk());
+  addChunk(new BatteryChunk(2500));
 }

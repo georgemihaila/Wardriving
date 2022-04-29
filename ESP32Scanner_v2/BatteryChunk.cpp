@@ -2,11 +2,7 @@
 #include "Battery.h"
 #include "Arduino.h"
 #include <TFT_eSPI.h>
-
-
-bool BatteryChunk::hasUpdate(){
-  return millis() - _lastUpdateTimestamp >= _updateEvery;
-}
+#include <SPI.h>
 
 void BatteryChunk::update(TFT_eSPI* tft){
   double voltage = _battery->getVoltage();
@@ -27,7 +23,5 @@ void BatteryChunk::update(TFT_eSPI* tft){
   tft->setTextSize(1);
   tft->setTextColor(batteryTextColor, TFT_BLACK);
   tft->setCursor(95, 0, 2);
-  tft->print(String(voltage) + "V");
-  Serial.println("Battery chunk update");
-  _lastUpdateTimestamp = millis();
+  tft->println(String(voltage) + "V");
 }
