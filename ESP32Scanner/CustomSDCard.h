@@ -2,9 +2,11 @@
 #define CustomSDCard_h_
 
 #include <Arduino.h>
-
+#include "TFTDisplay.h"
+#include "SplashScreen.h"
 class CustomSDCard {
     public:
+        CustomSDCard(TFTDisplay* display, SplashScreen* splashScreen);
         bool init();
         int getNumberOfLines(String filename);
         int getNumberOfFailedDataSends(String dataType);

@@ -130,6 +130,10 @@ void printGPSInfo(SplashScreen* splashScreen){
   }
 }
 
+void printLinesWritten(SplashScreen* splashScreen){
+  printAt("LW:   " + String(splashScreen->linesWritten), 0, 80);
+}
+
 SplashScreen* lastSplashScreen;
 String currentAction = "";
 
@@ -160,6 +164,7 @@ void TFTDisplay::refresh(SplashScreen* splashScreen, bool limitFPS) {
 
     dualLineGraphCentered(splashScreen->latestWiFiNetworkCount, splashScreen->latestBTCount);
     printLastLoopTime(splashScreen);
+    printLinesWritten(splashScreen);
     
     lastRefreshTimestamp = millis();
     lastSplashScreen = splashScreen;
@@ -175,6 +180,7 @@ void TFTDisplay::setCurrentAction(String text){
     currentAction = text;
     //refresh(lastSplashScreen, false);
     printCurrentAction();
+    lastRefreshTimestamp = millis();
 }
 
 void TFTDisplay::clear(){

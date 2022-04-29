@@ -11,8 +11,8 @@
 #include <BLEScan.h>
 #include <BLEAdvertisedDevice.h>
 
-#define TIME_BEFORE_FORCE_CACHE 30000
-#define COLLECT_UNIQUE_SIZE 250
+#define TIME_BEFORE_FORCE_CACHE 2000
+#define COLLECT_UNIQUE_SIZE 50
 
 DataManager* _btDataManager;
 CustomGPS* _btCustomGPS;
@@ -23,22 +23,7 @@ CustomWiFi* _btWifi;
 
 BLEScan* pBLEScan;
 
-bool addBTDeviceToListIfNewAndSendDataIfQueueFull(String (&collectedDevices)[COLLECT_UNIQUE_SIZE], int& collectedDeviceCount, int& sessionDevices, String deviceData, String deviceType, void (&sendFunction)()){
-  for (int i = 0; i < collectedDeviceCount; i++){
-    if (collectedDevices[i].equals(deviceData)){
-      return false;
-    }
-  }
-  _btCustomCard->appendCollectionLogFile(deviceType, deviceData);
-  collectedDevices[collectedDeviceCount++] = deviceData;
-  sessionDevices++;
-  Serial.println("New " + deviceType + " device found. Session total: " + String(sessionDevices));
-  if (collectedDeviceCount == COLLECT_UNIQUE_SIZE){
-    sendFunction();
-    collectedDeviceCount = 0; //Start over, keep queue for comparison
-  }
-  return true;
-}
+
 
 int btSessionBTDevices = 0;
 String collectedBTDevices[COLLECT_UNIQUE_SIZE];
@@ -91,8 +76,25 @@ void sendBTData(){
   sendBTQueueData(collectedBTDevices, collectedBTDeviceCount, lastBTSendIndex, lastBTDataSentMs, "Bluetooth/ProcessRawString", "Bluetooth", TIME_BEFORE_FORCE_CACHE);
 }
 
+bool addBTDeviceToListIfNewAndSendDataIfQueueFull(String (&collectedDevices)[COLLECT_UNIQUE_SIZE], int& collectedDeviceCount, int& sessionDevices, String deviceData, String deviceType){
+  for (int i = 0; i < collectedDeviceCount; i++){
+    if (collectedDevices[i].equals(deviceData)){
+      return false;
+    }
+  }
+  _btCustomCard->appendCollectionLogFile(deviceType, deviceData);
+  collectedDevices[collectedDeviceCount++] = deviceData;
+  sessionDevices++;
+  Serial.println("New " + deviceType + " device found. Session total: " + String(sessionDevices));
+  if (collectedDeviceCount >= COLLECT_UNIQUE_SIZE){
+    sendBTData();
+    collectedDeviceCount = 0; //Start over, keep queue for comparison
+  }
+  return true;
+}
+
 bool addBTDeviceIfNewAndSendDataIfQueueFull(String data){
-  return addBTDeviceToListIfNewAndSendDataIfQueueFull(collectedBTDevices, collectedBTDeviceCount, btSessionBTDevices, data, "Bluetooth", sendBTData);
+  return addBTDeviceToListIfNewAndSendDataIfQueueFull(collectedBTDevices, collectedBTDeviceCount, btSessionBTDevices, data, "Bluetooth");
 }
 
 int quickBTScanTime = 1;
@@ -143,6 +145,7 @@ void BTScanner::tick(){
     if (lastBTSendIndex < collectedBTDeviceCount){ //New WiFi devices added since last send
       _btDisplay->setCurrentAction("BT autosend");
       sendBTData();
+      lastBTDataSentMs = millis();
     }
   }
 }

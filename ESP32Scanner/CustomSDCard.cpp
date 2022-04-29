@@ -12,6 +12,16 @@
 #define HSPI_SS     33
 SPIClass *sdspi = NULL;
 
+#include "TFTDisplay.h"
+#include "SplashScreen.h"
+
+TFTDisplay* _cscTFT;
+SplashScreen* _cscSS;
+CustomSDCard::CustomSDCard(TFTDisplay* tft, SplashScreen* splashScreen){
+  _cscTFT = tft;
+  _cscSS = splashScreen;
+}
+
 bool CustomSDCard::init(){
     sdspi = new SPIClass(HSPI);
     sdspi->begin(HSPI_SCLK, HSPI_MISO, HSPI_MOSI, HSPI_SS);
@@ -73,6 +83,7 @@ void CustomSDCard::appendFile(const char * path, const char * message){
       Serial.println("Too many SD card errors");
       ESP.restart();
     }
+    _cscSS->linesWritten++;
 }
 
 void CustomSDCard::appendCollectionLogFile(String dataType, String data){

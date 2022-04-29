@@ -14,6 +14,8 @@ SplashScreen::SplashScreen(){
   wiFiNetworksAround = 0;
   sessionWiFiNetworks = 0;
 
+  linesWritten = 0;
+
   for(int i = 0; i < 135; i++){
     latestWiFiNetworkCount[i] = 0;
     latestBTCount[i] = 0;

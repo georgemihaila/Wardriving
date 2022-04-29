@@ -28,6 +28,7 @@ class SplashScreen{
         int nSatellites;
 
         unsigned long lastLoopTimeMs;
+        unsigned long linesWritten;
 };
 
 #endif

@@ -42,7 +42,7 @@ void setup() {
     delay(1000);
     ESP.restart();
   }
-  _card = new CustomSDCard();
+  _card = new CustomSDCard(_display, _splashScreen);
   if (!_card->init()){
     printSingleStringToSerialAndDisplay("SD card error");
     delay(1000);
@@ -86,10 +86,10 @@ void loop() {
   _btScanner->scan();
 
   _customGPS->tick();
+  _btScanner->tick();
+  _wifiScanner->tick();
   
   if (!_splashScreen->offline){
-    _btScanner->tick();
-    _wifiScanner->tick();
     //Keep WiFi up, if it disconnects give up and run in offline mode
     bool ok = _wifi->makeSureWiFiConnectionUp();
     if (!ok){
