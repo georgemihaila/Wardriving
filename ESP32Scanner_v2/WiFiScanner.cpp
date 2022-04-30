@@ -36,7 +36,7 @@ vector<WiFiNetwork> WiFiScanner::getResults(){
   vector<WiFiNetwork> result;
   if (scanCompleted()){
     int n = WiFi.scanComplete();
-    wiFiNetworksAround = n;
+    chunk->networksAround = n;
     for (int i = 0; i < n; ++i) {
       WiFiNetwork network;
       network.SSID = WiFi.SSID(i);

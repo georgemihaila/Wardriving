@@ -6,10 +6,12 @@
 #include "WiFiService.h"
 #include "WiFiChunk.h"
 #include "StatusBarAnimationChunk.h"
+#include "WiFiScanner.h"
 
-SplashScreen::SplashScreen(GPSService* gpsService, WiFiService* wifiService){
+SplashScreen::SplashScreen(GPSService* gpsService, WiFiService* wifiService, WiFiScanner* wifiScanner){
   addChunk(new BatteryChunk(2500));
   addChunk(new WiFiChunk(wifiService, 1000));
   addChunk(new GPSChunk(gpsService, 1000));
   addChunk(new StatusBarAnimationChunk(30));
+  //addChunk(wifiScanner->chunk);
 }

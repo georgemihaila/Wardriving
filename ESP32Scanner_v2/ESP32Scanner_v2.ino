@@ -11,8 +11,8 @@
 TFTDisplay* _display = new TFTDisplay();
 GPSService* _gpsService = new GPSService();
 WiFiService* _wifiService = new WiFiService();
-SplashScreen* _splashScreen = new SplashScreen(_gpsService, _wifiService);
 WiFiScanner* _wifiScanner = new WiFiScanner();
+SplashScreen* _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner);
 BluetoothScanner* _bluetoothScanner = new BluetoothScanner();
 ScanService* _scanService = new ScanService(_wifiScanner, _bluetoothScanner);
 
