@@ -21,11 +21,11 @@ bool Page::hasUpdate(){
 void Page::update(TFT_eSPI* tft){
   for (int i = 0; i < _chunks.size(); i++) {
      if (_chunks[i]->hasUpdate()){
-       _chunks[i]->update(tft);
-       TimedChunk* cast = static_cast<TimedChunk*>(_chunks[i]);
-       if (cast != nullptr){
-        cast->markUpdated();
-       }
+      _chunks[i]->update(tft);
+      TimedChunk* cast = static_cast<TimedChunk*>(_chunks[i]);
+      if (cast != nullptr){
+       cast->markUpdated();
+      }
      }
    }
 }

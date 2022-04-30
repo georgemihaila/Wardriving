@@ -2,10 +2,12 @@
 #define SplashScreen_h_
 
 #include "Page.h"
+#include "GPSService.h"
+#include "WiFiService.h"
 
 class SplashScreen : public Page{
   public:
-    SplashScreen();
+    SplashScreen(GPSService* gpsService, WiFiService* wifiService);
 };
 
 #endif

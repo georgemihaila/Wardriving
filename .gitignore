@@ -5,6 +5,7 @@
 node_modules
 cloc-1.64.exe
 CustomWiFi.cpp
+WiFiService.cpp
 appsettings.json
 appsettings.development.json
 https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
