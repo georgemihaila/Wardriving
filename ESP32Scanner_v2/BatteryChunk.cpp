@@ -22,6 +22,12 @@ void BatteryChunk::update(TFT_eSPI* tft){
 
   tft->setTextSize(1);
   tft->setTextColor(batteryTextColor, TFT_BLACK);
-  tft->setCursor(95, 0, 2);
-  tft->println(String(voltage) + "V");
+  if (voltage <= 4.2){
+    tft->setCursor(95, 0, 2);
+    tft->println(String(voltage) + "V");
+  }
+  else{  
+    tft->setCursor(99, 0, 2);
+    tft->println("USB");
+  }
 }

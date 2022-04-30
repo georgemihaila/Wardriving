@@ -17,9 +17,12 @@ BluetoothScanner* _bluetoothScanner = new BluetoothScanner();
 ScanService* _scanService = new ScanService(_wifiScanner, _bluetoothScanner);
 
 void setup() {
-  esp_log_level_set("*", ESP_LOG_DEBUG);
-  ESP_LOGI("status", "ESP32 up");
+  Serial.begin(115200);
+  esp_log_level_set("*", ESP_LOG_INFO);
+  ESP_LOGI("*", "ESP32 up");
   _wifiService->initWiFi(0);
+
+  _display->clear();
 }
 
 void loop() {
@@ -27,5 +30,5 @@ void loop() {
   _gpsService->update();
   _scanService->scan();
   yield();
-  Serial.println("\n" + String(ESP.getFreeHeap() / 1024) + "kB");
+  ESP_LOGI("*", "\n" + String(ESP.getFreeHeap() / 1024) + "kB");
 }

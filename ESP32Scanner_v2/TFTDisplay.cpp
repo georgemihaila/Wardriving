@@ -11,6 +11,10 @@ TFTDisplay::TFTDisplay(){
   _tft->init();
   _tft->setTextFont(2);
   clear();
+  _tft->setTextSize(1);
+  _tft->setTextColor(TFT_WHITE, TFT_BLACK);
+  _tft->setCursor(0, 0, 2);
+  _tft->println("Up");
 }
 
 void TFTDisplay::clear(){
