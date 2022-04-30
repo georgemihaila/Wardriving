@@ -27,7 +27,7 @@ void setup() {
 
 void loop() {
   _display->render(_splashScreen);
-  _gpsService->update();
+  //_gpsService->update();
   _scanService->scan();
   yield();
   ESP_LOGI("*", "\n" + String(ESP.getFreeHeap() / 1024) + "kB");

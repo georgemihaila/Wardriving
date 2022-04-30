@@ -7,7 +7,11 @@ using namespace std;
 
 class BluetoothScanner : public ScannerBase<BluetoothDevice> {
   public:
-      vector<BluetoothDevice> scan();
+    void scanAsync();
+    vector<BluetoothDevice> getResults();
+    bool scanCompleted();
+  private:
+    bool _isScanRunning = false;
 };
 
 #endif

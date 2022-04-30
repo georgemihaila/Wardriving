@@ -5,7 +5,9 @@ using namespace std;
 
 template <class T> class ScannerBase {
   public:
-    virtual vector<T> scan();
+    virtual void scanAsync();
+    virtual vector<T> getResults();
+    virtual bool scanCompleted();
 };
 
 #endif

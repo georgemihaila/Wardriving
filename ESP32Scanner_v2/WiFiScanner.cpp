@@ -17,17 +17,34 @@ String bssidToString(uint8_t *bssid){
   return result;
 }
 
-vector<WiFiNetwork> WiFiScanner::scan(){
+void WiFiScanner::scanAsync(){
+  if (scanCompleted()){
+    WiFi.scanDelete();
+    WiFi.scanNetworks(true, true);
+  }
+}
+
+bool WiFiScanner::scanCompleted(){
+  int8_t result = WiFi.scanComplete();
+  if (result == WIFI_SCAN_RUNNING || result == WIFI_SCAN_FAILED){
+    return false;
+  }
+  return true;
+}
+
+vector<WiFiNetwork> WiFiScanner::getResults(){
   vector<WiFiNetwork> result;
-  int n = WiFi.scanNetworks(false, true);
-  wiFiNetworksAround = n;
-  for (int i = 0; i < n; ++i) {
-    WiFiNetwork network;
-    network.SSID = WiFi.SSID(i);
-    network.encryptionType = WiFi.encryptionType(i);
-    network.channel = WiFi.channel(i);
-    network.BSSID = bssidToString(WiFi.BSSID(i));
-    result.push_back(network);
+  if (scanCompleted()){
+    int n = WiFi.scanComplete();
+    wiFiNetworksAround = n;
+    for (int i = 0; i < n; ++i) {
+      WiFiNetwork network;
+      network.SSID = WiFi.SSID(i);
+      network.encryptionType = WiFi.encryptionType(i);
+      network.channel = WiFi.channel(i);
+      network.BSSID = bssidToString(WiFi.BSSID(i));
+      result.push_back(network);
+    }
   }
   return result;
 }

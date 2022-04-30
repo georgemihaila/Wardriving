@@ -7,7 +7,9 @@ using namespace std;
 
 class WiFiScanner : public ScannerBase<WiFiNetwork> {
   public:
-    vector<WiFiNetwork> scan();
+    void scanAsync();
+    bool scanCompleted();
+    vector<WiFiNetwork> getResults();
     int wiFiNetworksAround;
 };
 
