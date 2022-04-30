@@ -10,7 +10,7 @@ class WiFiScanChunk : public Chunk {
       _height = h;
       _left = l;
       _top = t;
-    }
+    };
     virtual bool hasUpdate();
     virtual void update(TFT_eSPI* tft);
     int networksAround = 0;

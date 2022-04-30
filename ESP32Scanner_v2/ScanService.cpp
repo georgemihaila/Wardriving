@@ -31,6 +31,7 @@ void ScanService::scan(){
 }
 
 void ScanService::autosend(vector<WiFiNetwork> networks){
+  _wifiScanner->chunk->totalNetworks += networks.size();  //Remember to filter this (add only new networks)
   //Serial.println("Autosending " + String(networks.size()) + " networks");
 }
 void ScanService::autosend(vector<BluetoothDevice> devices){

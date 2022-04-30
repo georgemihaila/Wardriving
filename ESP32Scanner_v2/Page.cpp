@@ -7,6 +7,7 @@ using namespace std;
 
 void Page::addChunk(Chunk* chunk){
   _chunks.push_back(chunk);
+  Serial.println(_chunks.size());
 }
 
 bool Page::hasUpdate(){

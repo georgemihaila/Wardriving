@@ -13,5 +13,5 @@ SplashScreen::SplashScreen(GPSService* gpsService, WiFiService* wifiService, WiF
   addChunk(new WiFiChunk(wifiService, 1000));
   addChunk(new GPSChunk(gpsService, 1000));
   addChunk(new StatusBarAnimationChunk(30));
-  //addChunk(wifiScanner->chunk);
+  addChunk(wifiScanner->chunk);
 }
