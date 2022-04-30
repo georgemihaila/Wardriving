@@ -3,14 +3,14 @@
 
 #include "TimedChunk.h"
 #include "GPSService.h"
-#include <TFT_eSPI.h>
+#include "TFTDisplay.h"
 
 class GPSChunk : public TimedChunk {
   public:
     GPSChunk(GPSService* gpsService, unsigned long updateEvery) : TimedChunk(updateEvery){
       _gpsService = gpsService;
     };
-    virtual void update(TFT_eSPI* tft);
+    virtual void update(TFTDisplay* tft);
   private:
     GPSService* _gpsService;
 };

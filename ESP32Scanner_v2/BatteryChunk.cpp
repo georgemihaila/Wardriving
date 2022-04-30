@@ -1,10 +1,10 @@
 #include "BatteryChunk.h"
 #include "Battery.h"
 #include "Arduino.h"
-#include <TFT_eSPI.h>
+#include "TFTDisplay.h"
 #include <SPI.h>
 
-void BatteryChunk::update(TFT_eSPI* tft){
+void BatteryChunk::update(TFTDisplay* tft){
   double voltage = _battery->getVoltage();
   if (voltage == 0)
       return;
@@ -23,5 +23,9 @@ void BatteryChunk::update(TFT_eSPI* tft){
   tft->setTextSize(1);
   tft->setTextColor(batteryTextColor, TFT_BLACK);
   tft->setCursor(95, 0, 2);
-  tft->println(String(voltage) + "V");
+  if (voltage > 4.2){
+    tft->println("USB");
+  } else{
+    tft->println(String(voltage) + "V");
+  }
 }

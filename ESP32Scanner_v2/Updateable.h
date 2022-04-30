@@ -1,12 +1,12 @@
 #ifndef Updateable_h_
 #define Updateable_h_
 
-#include <TFT_eSPI.h>
+#include "TFTDisplay.h"
 
 class Updateable {
   public:
     virtual bool hasUpdate();
-    virtual void update(TFT_eSPI* tft);
+    virtual void update(TFTDisplay* tft);
 };
 
 #endif

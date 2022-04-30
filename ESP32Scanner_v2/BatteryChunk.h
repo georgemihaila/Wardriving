@@ -3,14 +3,14 @@
 
 #include "TimedChunk.h"
 #include "Battery.h"
-#include <TFT_eSPI.h>
+#include "TFTDisplay.h"
 
 class BatteryChunk : public TimedChunk {
   public:
     BatteryChunk(unsigned long updateEvery) : TimedChunk(updateEvery){
 
     };
-    virtual void update(TFT_eSPI* tft);
+    virtual void update(TFTDisplay* tft);
   private: 
     Battery* _battery = new Battery();
 };

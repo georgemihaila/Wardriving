@@ -1,11 +1,11 @@
 #ifndef TFTDisplay_h_
 #define TFTDisplay_h_
 
+class Page;
 #include <TFT_eSPI.h>
 #include <SPI.h>
-#include "Page.h"
 
-class TFTDisplay {
+class TFTDisplay : public TFT_eSPI {
   public:
       TFTDisplay();
       void clear();

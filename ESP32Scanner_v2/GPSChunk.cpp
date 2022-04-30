@@ -1,10 +1,10 @@
 #include "GPSChunk.h"
 #include "GPSService.h"
 #include "Arduino.h"
-#include <TFT_eSPI.h>
+#include "TFTDisplay.h"
 #include <SPI.h>
 
-void GPSChunk::update(TFT_eSPI* tft){
+void GPSChunk::update(TFTDisplay* tft){
   if (_gpsService->gpsHeardFrom){
     uint16_t color = TFT_WHITE;
     if (_gpsService->nSatellites == 0){

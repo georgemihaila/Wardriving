@@ -2,7 +2,7 @@
 
 #include <vector>
 using namespace std;
-#include <TFT_eSPI.h>
+#include "TFTDisplay.h"
 #include "TimedChunk.h"
 
 void Page::addChunk(Chunk* chunk){
@@ -18,7 +18,7 @@ bool Page::hasUpdate(){
    return false;
 }
 
-void Page::update(TFT_eSPI* tft){
+void Page::update(TFTDisplay* tft){
   for (int i = 0; i < _chunks.size(); i++) {
      if (_chunks[i]->hasUpdate()){
       _chunks[i]->update(tft);

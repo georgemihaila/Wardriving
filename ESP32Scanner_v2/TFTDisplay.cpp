@@ -19,6 +19,6 @@ void TFTDisplay::clear(){
 
 void TFTDisplay::render(Page* page){
   if (page->hasUpdate()){
-    page->update(_tft);
+    page->update(this);
   }
 }
