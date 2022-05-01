@@ -5,7 +5,7 @@
 #include <SPI.h>
 #include "Page.h"
 
-class TFTDisplay {
+class TFTDisplay : public TFT_eSPI {
   public:
       TFTDisplay();
       void clear();

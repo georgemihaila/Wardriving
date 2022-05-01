@@ -16,12 +16,13 @@ class WiFiScanChunk : public Chunk {
     int networksAround = 0;
     int newNetworks = 0;
     int totalNetworks = 0;
+    int totalScans = 0;
   private:
     int _width;
     int _height;
     int _left;
     int _top;
-    int _lastRefreshedAtTotalNetworks = 0;
+    int _lastRefreshedAtTotalScans = 0;
 };
 
 #endif

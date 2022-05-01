@@ -1,15 +1,15 @@
 #include "WiFiScanChunk.h"
+#include "Arduino.h"
 
 bool WiFiScanChunk::hasUpdate(){
-  Serial.println("Check wifi shicn");
-  return _lastRefreshedAtTotalNetworks != totalNetworks;
+  return _lastRefreshedAtTotalScans != totalScans;
 }
 
 void WiFiScanChunk::update(TFT_eSPI* tft){
-  Serial.println("Updating wifi shicn");
-  tft->setTextSize(1);
-  tft->setTextColor(TFT_WHITE, TFT_BLACK);
-  tft->setCursor(_left, _top, 2);
-  tft->println(networksAround);
-  _lastRefreshedAtTotalNetworks = totalNetworks;
+  tft->drawLine(0, _top, 135, _top, TFT_WHITE);
+
+  //TFTDisplayExtensions::printAt(tft, String(networksAround), _left, _top + 2);
+
+  tft->drawLine(0, _top + _height, 135, _top + _height, TFT_WHITE);
+  _lastRefreshedAtTotalScans = totalScans;
 }

@@ -26,6 +26,7 @@ void ScanService::scan(){
       
       _currentScan = WIFI;
       _wifiScanner->scanAsync();
+      _wifiScanner->chunk->totalScans++;
     }
   }
 }
