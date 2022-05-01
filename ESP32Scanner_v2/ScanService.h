@@ -4,16 +4,18 @@
 #include "BluetoothScanner.h"
 #include "BluetoothDevice.h"
 #include "WiFiNetwork.h"
+#include "GPSService.h"
 #include <vector>
 using namespace std;
 
 class ScanService
 {
 public:
-  ScanService(WiFiScanner *wifiScanner, BluetoothScanner *bluetoothScanner)
+  ScanService(WiFiScanner *wifiScanner, BluetoothScanner *bluetoothScanner, GPSService* gpsService)
   {
     _wifiScanner = wifiScanner;
     _bluetoothScanner = bluetoothScanner;
+    _gpsService = gpsService;
 
     _wifiScanner->scanAsync();
   };
@@ -25,6 +27,7 @@ private:
   int _currentScan = 0;
   WiFiScanner *_wifiScanner;
   BluetoothScanner *_bluetoothScanner;
+  GPSService* _gpsService;
 };
 
 #endif

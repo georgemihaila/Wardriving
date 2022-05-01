@@ -15,8 +15,11 @@ void ScanService::scan()
   {
     if (_wifiScanner->scanCompleted())
     {
+      _wifiScanner->chunk->totalScans++;
+
       // Serial.println("WiFi scan completed");
       autosend(_wifiScanner->getResults());
+      _wifiScanner->chunk->addNSatellites(_gpsService->nSatellites);
 
       _currentScan = BT;
       _bluetoothScanner->scanAsync();
@@ -26,19 +29,21 @@ void ScanService::scan()
   {
     if (_bluetoothScanner->scanCompleted())
     {
+      //_bluetoothScanner->chunk->totalScans++;
+
       // Serial.println("Bluetooth scan completed");
       autosend(_bluetoothScanner->getResults());
+      _bluetoothScanner->chunk->addNSatellites(_gpsService->nSatellites); //Maybe we could not use two arrays
 
       _currentScan = WIFI;
       _wifiScanner->scanAsync();
-      _wifiScanner->chunk->totalScans++;
     }
   }
 }
 
 void ScanService::autosend(vector<WiFiNetwork> networks)
 {
-  _wifiScanner->chunk->totalNetworks += networks.size(); // Remember to filter this (add only new networks)
+  //_wifiScanner->chunk->totalNetworks += totalNew(networks.size()); // Remember to filter this (add only new networks)
   // Serial.println("Autosending " + String(networks.size()) + " networks");
 }
 void ScanService::autosend(vector<BluetoothDevice> devices)

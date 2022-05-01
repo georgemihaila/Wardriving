@@ -7,6 +7,7 @@
 #include "WiFiScanner.h"
 #include "BluetoothScanner.h"
 #include "ScanService.h"
+#include "API.h"
 
 TFTDisplay *_display;
 GPSService *_gpsService;
@@ -15,6 +16,7 @@ WiFiScanner *_wifiScanner;
 SplashScreen *_splashScreen;
 BluetoothScanner *_bluetoothScanner;
 ScanService *_scanService;
+API* _api;
 
 // Use this because some methods use serial before Serial.begin(...)
 void initializeServices()
@@ -23,9 +25,10 @@ void initializeServices()
   _gpsService = new GPSService();
   _wifiService = new WiFiService();
   _wifiScanner = new WiFiScanner();
-  _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner);
   _bluetoothScanner = new BluetoothScanner();
-  _scanService = new ScanService(_wifiScanner, _bluetoothScanner);
+  _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner, _bluetoothScanner);
+  _scanService = new ScanService(_wifiScanner, _bluetoothScanner, _gpsService);
+  _api = new API("http://10.10.0.241:6488/");
 }
 
 void setup()
@@ -43,7 +46,7 @@ void setup()
 void loop()
 {
   _display->render(_splashScreen);
-  //_gpsService->update();
+  _gpsService->update();
   _scanService->scan();
   yield();
   ESP_LOGI("*", "\n" + String(ESP.getFreeHeap() / 1024) + "kB");

@@ -4,15 +4,18 @@
 using namespace std;
 #include "WiFiNetwork.h"
 #include "ScannerBase.h"
-#include "WiFiScanChunk.h"
+#include "ScanChunk.h"
 
 class WiFiScanner : public ScannerBase<WiFiNetwork>
 {
 public:
+  WiFiScanner()
+  {
+    chunk = new ScanChunk(135, 240 / 2 - 20, 0, 20);
+  };
   void scanAsync();
   bool scanCompleted();
   vector<WiFiNetwork> getResults();
-  WiFiScanChunk *chunk = new WiFiScanChunk(135, 240 / 2 - 20, 0, 20);
 };
 
 #endif
