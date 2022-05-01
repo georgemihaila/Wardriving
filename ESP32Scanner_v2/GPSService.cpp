@@ -75,13 +75,20 @@ void GPSService::gpsDelay(unsigned long ms)
 
       if (millis() - start >= ms)
         break;
+       if (gps.location.isUpdated()){
+         break;
+       }
     }
   } while (millis() - start < ms);
 }
 
 void GPSService::update()
-{
-  gpsDelay(1500);
+{/*
+  if (millis() - _lastUpdatedAtMS < _updateEveryMS){
+    return;
+  }*/
+  yield();
+  //gpsDelay(1500);
   bool updated = false;
   if (gps.location.isUpdated())
   {
@@ -95,6 +102,7 @@ void GPSService::update()
     updated = true;
   }
   nSatellites = gps.satellites.value();
+  _lastUpdatedAtMS = millis();
 }
 
 void GPSService::yield()

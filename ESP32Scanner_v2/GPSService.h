@@ -22,6 +22,8 @@ private:
   void changeFrequency();
   void gpsDelay(unsigned long ms);
   void sendPacket(byte *packet, byte len);
+  unsigned long _lastUpdatedAtMS = 0;
+  unsigned long _updateEveryMS = 3000;
 };
 
 #endif

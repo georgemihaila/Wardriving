@@ -17,11 +17,11 @@ void ScanService::scan()
     {
       _wifiScanner->chunk->totalScans++;
 
-      // Serial.println("WiFi scan completed");
       autosend(_wifiScanner->getResults());
       _wifiScanner->chunk->addNSatellites(_gpsService->nSatellites);
 
       _currentScan = BT;
+      //Serial.println("Starting Bluetooth scan");
       _bluetoothScanner->scanAsync();
     }
   }
@@ -29,13 +29,14 @@ void ScanService::scan()
   {
     if (_bluetoothScanner->scanCompleted())
     {
-      //_bluetoothScanner->chunk->totalScans++;
+      _bluetoothScanner->chunk->totalScans++;
+      _bluetoothScanner->chunk->networksAround = _bluetoothScanner->getResults().size();
 
-      // Serial.println("Bluetooth scan completed");
       autosend(_bluetoothScanner->getResults());
       _bluetoothScanner->chunk->addNSatellites(_gpsService->nSatellites); //Maybe we could not use two arrays
 
       _currentScan = WIFI;
+      //Serial.println("Starting WiFi scan");
       _wifiScanner->scanAsync();
     }
   }

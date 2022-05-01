@@ -2,18 +2,20 @@
 #define ScanChunk_h_
 
 #include "Chunk.h"
+#include "Arduino.h"
 
 class ScanChunk : public Chunk
 {
 public:
-  ScanChunk(int w, int h, int l, int t)
+  ScanChunk(String dataType, int w, int h, int l, int t)
   {
     _width = w;
     _height = h;
     _left = l;
     _top = t;
+    this->dataType = dataType;
 
-    for (int i = 0; i < 135; i++){
+    for (int i = 0; i < 30; i++){
       _latestEntries[i] = 0;
       _nSatellites[i] = 0;
     }
@@ -24,6 +26,7 @@ public:
   int newNetworks = 0;
   int totalNetworks = 0;
   int totalScans = 0;
+  String dataType;
   
   void addNSatellites(int nSatellites);
 protected:
@@ -46,10 +49,10 @@ protected:
   int _left;
   int _top;
   int _lastRefreshedAtTotalScans = 0;
-  int _latestEntries[135];
+  int _latestEntries[30];
   
   int _latestNSatellites = 0;
-  int _nSatellites[135];
+  int _nSatellites[30];
 private:
   unsigned long _totalEntries = 0;
 };

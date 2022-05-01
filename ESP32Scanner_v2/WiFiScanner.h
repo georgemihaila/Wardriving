@@ -11,7 +11,7 @@ class WiFiScanner : public ScannerBase<WiFiNetwork>
 public:
   WiFiScanner()
   {
-    chunk = new ScanChunk(135, 240 / 2 - 20, 0, 20);
+    chunk = new ScanChunk("WiFi", 135, 240 / 2 - 20, 0, 20);
   };
   void scanAsync();
   bool scanCompleted();

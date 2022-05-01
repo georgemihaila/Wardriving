@@ -13,7 +13,7 @@ public:
 
 private:
   int getX();
-  int y = 239;
+  int y = 0;
 };
 
 #endif

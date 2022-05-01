@@ -16,7 +16,7 @@ WiFiScanner *_wifiScanner;
 SplashScreen *_splashScreen;
 BluetoothScanner *_bluetoothScanner;
 ScanService *_scanService;
-API* _api;
+API *_api;
 
 // Use this because some methods use serial before Serial.begin(...)
 void initializeServices()
@@ -38,7 +38,10 @@ void setup()
 
   esp_log_level_set("*", ESP_LOG_INFO);
   ESP_LOGI("*", "ESP32 up");
-  _wifiService->initWiFi(0);
+  if (_wifiService->initWiFi(0))
+  {
+    _api->createNewSession();
+  }
 
   _display->clear();
 }

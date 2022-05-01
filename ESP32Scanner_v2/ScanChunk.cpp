@@ -10,12 +10,13 @@ void ScanChunk::update(TFT_eSPI *tft)
 {
   appendLastElement(networksAround); // Assume only drawn ONCE, when a scan is completed
 
-  // tft->drawLine(0, _top, 135, _top, TFT_WHITE);
+  // tft->drawLine(0, _top, 30, _top, TFT_WHITE);
 
   graph(tft);
-  printAt(tft,  String(/*newNetworks*/0) + "/" + String(networksAround) + "/" + String(totalNetworks) , _left, _top + 2);
+  printAt(tft, dataType, _left, _top + 2);
+  printAt(tft, String(/*newNetworks*/ 0) + "/" + String(networksAround) + "/" + String(totalNetworks), _left, _top + 2 + 20);
 
-  // tft->drawLine(0, _top + _height, 135, _top + _height, TFT_WHITE);
+  // tft->drawLine(0, _top + _height, 30, _top + _height, TFT_WHITE);
   _lastRefreshedAtTotalScans = totalScans;
 }
 
@@ -48,7 +49,7 @@ int ScanChunk::max(int data[], int count)
 
 void ScanChunk::graph(TFT_eSPI *tft)
 {
-  graph(tft, _latestEntries, 135, _top, false, 0, max(_latestEntries, 135), _height);
+  graph(tft, _latestEntries, 30, _top, false, 0, max(_latestEntries, 30), _height);
 }
 
 void ScanChunk::graph(TFT_eSPI *tft, int data[], int count, int yOffset, bool invertVertically)
@@ -70,11 +71,12 @@ void ScanChunk::graph(TFT_eSPI *tft, int data[], int count, int yOffset, bool in
 {
   int graphBottom = yOffset + height;
   int minIndex = count - _totalEntries;
-  if (minIndex < 0){
+  if (minIndex < 0)
+  {
     minIndex = 0;
   }
-  tft->fillRect(0, yOffset, _width + _left, yOffset + height, TFT_BLACK); //Clear chart area
-  int rectWidth = count / minimum(135, _totalEntries);
+  tft->fillRect(0, yOffset, _width + _left, yOffset + height, TFT_BLACK); // Clear chart area
+  int rectWidth = 135 / minimum(30, _totalEntries);
   for (int i = count - 1, ri = 0; i >= minIndex; i--, ri++)
   {
     int h1 = (int)customMap(data[i], min, max, 0, height);
@@ -83,12 +85,17 @@ void ScanChunk::graph(TFT_eSPI *tft, int data[], int count, int yOffset, bool in
     {
       y = graphBottom + h1;
     }
-    uint8_t color = TFT_WHITE;
-    if (_nSatellites[i] < 4){
-      color = TFT_YELLOW;
-    }
     int x1 = _width - (ri + 1) * rectWidth;
-    tft->fillRect(x1, y, rectWidth, h1, color);
+    tft->fillRect(x1, y, rectWidth, h1, TFT_WHITE);
+    if (_nSatellites[i] >= 4)
+    {
+      tft->fillRect(x1, graphBottom - 5, rectWidth, 5, TFT_BLUE);
+    }
+    
+    if (rectWidth >= 4){
+      tft->drawLine(x1, _top, x1, graphBottom, TFT_BLACK);
+      tft->drawLine(x1 + rectWidth, _top, x1 + rectWidth, graphBottom, TFT_BLACK);
+    }
   }
 }
 
@@ -113,8 +120,8 @@ void ScanChunk::printAt(TFT_eSPI *tft, String text, int x, int y)
 void ScanChunk::appendLastElement(int entry)
 {
   _totalEntries++;
-  _latestEntries[134] = entry;
-  for (int i = 0; i < 134; i++)
+  _latestEntries[30 - 1] = entry;
+  for (int i = 0; i < 30 - 1; i++)
   {
     _latestEntries[i] = _latestEntries[i + 1];
   }
@@ -122,8 +129,8 @@ void ScanChunk::appendLastElement(int entry)
 
 void ScanChunk::addNSatellites(int nSatellites)
 {
-  _nSatellites[134] = nSatellites;
-  for (int i = 0; i < 134; i++)
+  _nSatellites[30 - 1] = nSatellites;
+  for (int i = 0; i < 30 - 1; i++)
   {
     _nSatellites[i] = _nSatellites[i + 1];
   }
