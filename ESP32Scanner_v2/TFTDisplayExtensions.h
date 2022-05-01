@@ -15,6 +15,7 @@ public:
         graph(tft, data1, 135, yOffset - height, absoluteMax); // top
             graph(tft, data2, 135, yOffset, absoluteMax
     }
+
 };
 
 #endif

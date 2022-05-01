@@ -7,15 +7,17 @@
 #include "GPSService.h"
 #include <vector>
 using namespace std;
+#include "DataManager.h"
 
 class ScanService
 {
 public:
-  ScanService(WiFiScanner *wifiScanner, BluetoothScanner *bluetoothScanner, GPSService* gpsService)
+  ScanService(WiFiScanner *wifiScanner, BluetoothScanner *bluetoothScanner, GPSService* gpsService, DataManager* dataManager)
   {
     _wifiScanner = wifiScanner;
     _bluetoothScanner = bluetoothScanner;
     _gpsService = gpsService;
+    _dataManager = dataManager;
 
     _wifiScanner->scanAsync();
   };
@@ -28,6 +30,7 @@ private:
   WiFiScanner *_wifiScanner;
   BluetoothScanner *_bluetoothScanner;
   GPSService* _gpsService;
+  DataManager* _dataManager;
 };
 
 #endif

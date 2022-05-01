@@ -30,3 +30,21 @@ void TFTDisplay::render(Page *page)
     page->update(_tft);
   }
 }
+
+void TFTDisplay::printAt(String text, int x, int y, int size, uint16_t color, uint16_t backgroundColor)
+{
+  _tft->setTextSize(size);
+  _tft->setTextColor(color, backgroundColor);
+  _tft->setCursor(x, y, 2);
+  _tft->println(text);
+}
+
+void TFTDisplay::printAt(String text, int x, int y, int size)
+{
+  TFTDisplay::printAt(text, x, y, size, TFT_WHITE, TFT_BLACK);
+}
+
+void TFTDisplay::printAt(String text, int x, int y)
+{
+  TFTDisplay::printAt(text, x, y, 1);
+}

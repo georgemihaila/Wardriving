@@ -75,20 +75,21 @@ void GPSService::gpsDelay(unsigned long ms)
 
       if (millis() - start >= ms)
         break;
-       if (gps.location.isUpdated()){
-         break;
-       }
+      if (gps.location.isUpdated())
+      {
+        break;
+      }
     }
   } while (millis() - start < ms);
 }
 
 void GPSService::update()
-{/*
-  if (millis() - _lastUpdatedAtMS < _updateEveryMS){
-    return;
-  }*/
+{ /*
+   if (millis() - _lastUpdatedAtMS < _updateEveryMS){
+     return;
+   }*/
   yield();
-  //gpsDelay(1500);
+  // gpsDelay(1500);
   bool updated = false;
   if (gps.location.isUpdated())
   {
@@ -108,4 +109,18 @@ void GPSService::update()
 void GPSService::yield()
 {
   gpsDelay(0);
+}
+
+#define LAT 44.46228918598267
+#define LNG 26.129464210079554
+#define K 111139
+
+double GPSService::getXMetersFromOrigin()
+{
+  return (LNG - longitude) * K;
+}
+
+double GPSService::getYMetersFromOrigin()
+{
+  return (LAT - latitude) * K;
 }

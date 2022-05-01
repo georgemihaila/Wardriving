@@ -17,6 +17,8 @@ public:
   double latitude = 0;
   double altitude = 0;
   int nSatellites = 0;
+  double getXMetersFromOrigin();
+  double getYMetersFromOrigin();
 
 private:
   void changeFrequency();
