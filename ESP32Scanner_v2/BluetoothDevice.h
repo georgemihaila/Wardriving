@@ -5,11 +5,15 @@
 
 class BluetoothDevice
 {
-    public:
-        String name;
-        String address;
-        String manufacturerData;
-        String serviceUUID;
+public:
+    String name;
+    String address;
+    String manufacturerData;
+    String serviceUUID;
+    String toString()
+    {
+        return " Address: " + address + ", serviceUUID: " + serviceUUID + ",Name: " + name + ", manufacturer data: " + manufacturerData;
+    }
 };
 
 #endif

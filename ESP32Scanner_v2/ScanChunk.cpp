@@ -14,7 +14,7 @@ void ScanChunk::update(TFT_eSPI *tft)
 
   graph(tft);
   printAt(tft, dataType, _left, _top + 2);
-  printAt(tft, String(/*newNetworks*/ 0) + "/" + String(networksAround) + "/" + String(totalNetworks), _left, _top + 2 + 20);
+  printAt(tft, String(newNetworks) + "/" + String(networksAround) + "/" + String(totalNetworks), _left, _top + 2 + 20);
 
   // tft->drawLine(0, _top + _height, 30, _top + _height, TFT_WHITE);
   _lastRefreshedAtTotalScans = totalScans;

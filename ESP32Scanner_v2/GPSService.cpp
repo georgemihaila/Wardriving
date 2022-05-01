@@ -67,7 +67,7 @@ void GPSService::gpsDelay(unsigned long ms)
     {
       int c = gpsPort.read();
       gps.encode(c);
-      Serial.print((char)c);
+      //Serial.print((char)c);
       if (!gpsHeardFrom)
       {
         gpsHeardFrom = true;

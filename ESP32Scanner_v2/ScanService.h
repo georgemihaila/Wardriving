@@ -24,8 +24,6 @@ public:
   void scan();
 
 private:
-  void autosend(vector<WiFiNetwork> networks);
-  void autosend(vector<BluetoothDevice> devices);
   int _currentScan = 0;
   WiFiScanner *_wifiScanner;
   BluetoothScanner *_bluetoothScanner;

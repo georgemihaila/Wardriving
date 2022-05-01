@@ -32,9 +32,9 @@ void initializeServices()
   _bluetoothScanner = new BluetoothScanner();
   _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner, _bluetoothScanner);
   _sdCard = new SDCard();
-  _dataManager = new DataManager(_sdCard, _gpsService);
+   _api = new API("http://10.10.0.241:6488/");
+  _dataManager = new DataManager(_sdCard, _gpsService, _api);
   _scanService = new ScanService(_wifiScanner, _bluetoothScanner, _gpsService, _dataManager);
-  _api = new API("http://10.10.0.241:6488/");
 }
 
 void setup()

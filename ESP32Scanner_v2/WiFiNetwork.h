@@ -9,6 +9,11 @@ public:
   String BSSID;
   String encryptionType;
   int channel;
+
+  String toString()
+  {
+    return SSID + "," + encryptionType + "," + String(channel) + "," + BSSID;
+  }
 };
 
 #endif
