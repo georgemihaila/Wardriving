@@ -4,11 +4,14 @@ using namespace std;
 #include "WiFiScanner.h"
 #include <WiFi.h>
 
-String bssidToString(uint8_t *bssid){
+String bssidToString(uint8_t *bssid)
+{
   char HexLookUp[] = "0123456789abcdef";
   String result;
-  for (int i = 0; i < 6; i++){
-    if (i % 2 == 1){
+  for (int i = 0; i < 6; i++)
+  {
+    if (i % 2 == 1)
+    {
       result += ":";
     }
     result += HexLookUp[bssid[i] >> 4];
@@ -17,27 +20,34 @@ String bssidToString(uint8_t *bssid){
   return result;
 }
 
-void WiFiScanner::scanAsync(){
-  if (scanCompleted()){
+void WiFiScanner::scanAsync()
+{
+  if (scanCompleted())
+  {
     WiFi.scanDelete();
     WiFi.scanNetworks(true, true);
   }
 }
 
-bool WiFiScanner::scanCompleted(){
+bool WiFiScanner::scanCompleted()
+{
   int8_t result = WiFi.scanComplete();
-  if (result == WIFI_SCAN_RUNNING || result == WIFI_SCAN_FAILED){
+  if (result == WIFI_SCAN_RUNNING || result == WIFI_SCAN_FAILED)
+  {
     return false;
   }
   return true;
 }
 
-vector<WiFiNetwork> WiFiScanner::getResults(){
+vector<WiFiNetwork> WiFiScanner::getResults()
+{
   vector<WiFiNetwork> result;
-  if (scanCompleted()){
+  if (scanCompleted())
+  {
     int n = WiFi.scanComplete();
     chunk->networksAround = n;
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i)
+    {
       WiFiNetwork network;
       network.SSID = WiFi.SSID(i);
       network.encryptionType = WiFi.encryptionType(i);

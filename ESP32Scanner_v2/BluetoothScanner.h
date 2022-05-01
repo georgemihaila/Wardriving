@@ -5,13 +5,15 @@ using namespace std;
 #include "BluetoothDevice.h"
 #include "ScannerBase.h"
 
-class BluetoothScanner : public ScannerBase<BluetoothDevice> {
-  public:
-    void scanAsync();
-    vector<BluetoothDevice> getResults();
-    bool scanCompleted();
-  private:
-    bool _isScanRunning = false;
+class BluetoothScanner : public ScannerBase<BluetoothDevice>
+{
+public:
+  void scanAsync();
+  vector<BluetoothDevice> getResults();
+  bool scanCompleted();
+
+private:
+  bool _isScanRunning = false;
 };
 
 #endif

@@ -5,14 +5,16 @@
 #include "Battery.h"
 #include <TFT_eSPI.h>
 
-class BatteryChunk : public TimedChunk {
-  public:
-    BatteryChunk(unsigned long updateEvery) : TimedChunk(updateEvery){
+class BatteryChunk : public TimedChunk
+{
+public:
+  BatteryChunk(unsigned long updateEvery) : TimedChunk(updateEvery){
 
-    };
-    virtual void update(TFT_eSPI* tft);
-  private: 
-    Battery* _battery = new Battery();
+                                            };
+  virtual void update(TFT_eSPI *tft);
+
+private:
+  Battery *_battery = new Battery();
 };
 
 #endif

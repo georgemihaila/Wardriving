@@ -3,11 +3,13 @@
 #include <vector>
 using namespace std;
 
-template <class T> class ScannerBase {
-  public:
-    virtual void scanAsync();
-    virtual vector<T> getResults();
-    virtual bool scanCompleted();
+template <class T>
+class ScannerBase
+{
+public:
+  virtual void scanAsync();
+  virtual vector<T> getResults();
+  virtual bool scanCompleted();
 };
 
 #endif

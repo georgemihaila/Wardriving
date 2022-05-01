@@ -3,15 +3,17 @@
 
 #include "TimedChunk.h"
 
-class StatusBarAnimationChunk : public TimedChunk {
-  public:
-    StatusBarAnimationChunk(unsigned long updateEvery) : TimedChunk(updateEvery){
+class StatusBarAnimationChunk : public TimedChunk
+{
+public:
+  StatusBarAnimationChunk(unsigned long updateEvery) : TimedChunk(updateEvery){
 
-    };
-    virtual void update(TFT_eSPI* tft);
-  private:
-    int getX();
-    int y = 239;
+                                                       };
+  virtual void update(TFT_eSPI *tft);
+
+private:
+  int getX();
+  int y = 239;
 };
 
 #endif

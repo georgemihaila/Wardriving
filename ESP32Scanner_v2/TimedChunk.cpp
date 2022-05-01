@@ -1,9 +1,11 @@
 #include "TimedChunk.h"
 
-bool TimedChunk::hasUpdate(){
+bool TimedChunk::hasUpdate()
+{
   return millis() - _lastUpdateTimestamp >= _updateEvery;
 }
 
-void TimedChunk::markUpdated(){
+void TimedChunk::markUpdated()
+{
   _lastUpdateTimestamp = millis();
 }

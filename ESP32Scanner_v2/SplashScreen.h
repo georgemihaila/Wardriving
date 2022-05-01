@@ -6,9 +6,10 @@
 #include "WiFiService.h"
 #include "WiFiScanner.h"
 
-class SplashScreen : public Page{
-  public:
-    SplashScreen(GPSService* gpsService, WiFiService* wifiService, WiFiScanner* wifiScanner);
+class SplashScreen : public Page
+{
+public:
+  SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiFiScanner *wifiScanner);
 };
 
 #endif

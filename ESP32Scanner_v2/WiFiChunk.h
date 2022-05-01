@@ -5,14 +5,17 @@
 #include "WiFiService.h"
 #include <TFT_eSPI.h>
 
-class WiFiChunk : public TimedChunk {
-  public:
-    WiFiChunk(WiFiService* wifiService, unsigned long updateEvery) : TimedChunk(updateEvery){
-      _wifiService = wifiService;
-    };
-    virtual void update(TFT_eSPI* tft);
-  private:
-    WiFiService* _wifiService;
+class WiFiChunk : public TimedChunk
+{
+public:
+  WiFiChunk(WiFiService *wifiService, unsigned long updateEvery) : TimedChunk(updateEvery)
+  {
+    _wifiService = wifiService;
+  };
+  virtual void update(TFT_eSPI *tft);
+
+private:
+  WiFiService *_wifiService;
 };
 
 #endif

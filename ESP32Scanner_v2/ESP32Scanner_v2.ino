@@ -8,16 +8,17 @@
 #include "BluetoothScanner.h"
 #include "ScanService.h"
 
-TFTDisplay* _display;
-GPSService* _gpsService;
-WiFiService* _wifiService;
-WiFiScanner* _wifiScanner;
-SplashScreen* _splashScreen;
-BluetoothScanner* _bluetoothScanner;
-ScanService* _scanService;
+TFTDisplay *_display;
+GPSService *_gpsService;
+WiFiService *_wifiService;
+WiFiScanner *_wifiScanner;
+SplashScreen *_splashScreen;
+BluetoothScanner *_bluetoothScanner;
+ScanService *_scanService;
 
-//Use this because some methods use serial before Serial.begin(...)
-void initializeServices(){
+// Use this because some methods use serial before Serial.begin(...)
+void initializeServices()
+{
   _display = new TFTDisplay();
   _gpsService = new GPSService();
   _wifiService = new WiFiService();
@@ -27,7 +28,8 @@ void initializeServices(){
   _scanService = new ScanService(_wifiScanner, _bluetoothScanner);
 }
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   initializeServices();
 
@@ -38,7 +40,8 @@ void setup() {
   _display->clear();
 }
 
-void loop() {
+void loop()
+{
   _display->render(_splashScreen);
   //_gpsService->update();
   _scanService->scan();

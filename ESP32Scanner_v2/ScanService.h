@@ -7,22 +7,24 @@
 #include <vector>
 using namespace std;
 
-class ScanService {
-  public:
-      ScanService(WiFiScanner* wifiScanner, BluetoothScanner* bluetoothScanner) {
-        _wifiScanner = wifiScanner;
-        _bluetoothScanner = bluetoothScanner; 
+class ScanService
+{
+public:
+  ScanService(WiFiScanner *wifiScanner, BluetoothScanner *bluetoothScanner)
+  {
+    _wifiScanner = wifiScanner;
+    _bluetoothScanner = bluetoothScanner;
 
-        _wifiScanner->scanAsync();
-      };
-      void scan();
-    private:
-      void autosend(vector<WiFiNetwork> networks);
-      void autosend(vector<BluetoothDevice> devices);
-      int _currentScan = 0;
-      WiFiScanner* _wifiScanner;
-      BluetoothScanner* _bluetoothScanner;
+    _wifiScanner->scanAsync();
+  };
+  void scan();
+
+private:
+  void autosend(vector<WiFiNetwork> networks);
+  void autosend(vector<BluetoothDevice> devices);
+  int _currentScan = 0;
+  WiFiScanner *_wifiScanner;
+  BluetoothScanner *_bluetoothScanner;
 };
 
 #endif
-

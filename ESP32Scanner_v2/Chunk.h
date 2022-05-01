@@ -3,9 +3,10 @@
 
 #include "Updateable.h"
 
-class Chunk : public Updateable {
-  public:
-    virtual bool hasUpdate();
+class Chunk : public Updateable
+{
+public:
+  virtual bool hasUpdate();
 };
 
 #endif
