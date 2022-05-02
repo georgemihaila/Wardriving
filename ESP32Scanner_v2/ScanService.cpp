@@ -17,7 +17,7 @@ void ScanService::scan()
     {
       _wifiScanner->chunk->totalScans++;
 
-      int newWiFis = _dataManager->autosend(_wifiScanner->getResults());
+      int newWiFis = _dataManager->saveNewEntries(_wifiScanner->getResults());
       _wifiScanner->chunk->addNSatellites(_gpsService->nSatellites);
       _wifiScanner->chunk->newNetworks = newWiFis;
       _wifiScanner->chunk->totalNetworks += newWiFis;
@@ -34,7 +34,7 @@ void ScanService::scan()
       _bluetoothScanner->chunk->totalScans++;
       _bluetoothScanner->chunk->networksAround = _bluetoothScanner->getResults().size();
 
-      int newBTs = _dataManager->autosend(_bluetoothScanner->getResults());
+      int newBTs = _dataManager->saveNewEntries(_bluetoothScanner->getResults());
       _bluetoothScanner->chunk->addNSatellites(_gpsService->nSatellites); //Maybe we could not use two arrays
       _bluetoothScanner->chunk->newNetworks = newBTs;
       _bluetoothScanner->chunk->totalNetworks += newBTs;

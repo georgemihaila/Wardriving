@@ -55,7 +55,7 @@ GPSService::GPSService()
 
 String GPSService::generateLocationCSV()
 {
-  return String(longitude) + "," + String(latitude) + "," + String(altitude);
+  return String(longitude, 12) + "," + String(latitude, 12) + "," + String(altitude, 12);
 }
 
 void GPSService::gpsDelay(unsigned long ms)

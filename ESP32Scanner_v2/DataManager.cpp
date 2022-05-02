@@ -1,5 +1,7 @@
 #include "DataManager.h"
 
+#define CACHE_SIZE 50
+
 bool DataManager::updateChunk()
 {
     int x = int(_gpsService->getXMetersFromOrigin() / _chunkLengthMeters);
@@ -30,16 +32,18 @@ String DataManager::getChunkName()
 
 String DataManager::getChunkFileName(String dataType)
 {
-    return "/" + dataType + String(_chunkLengthMeters) + "x" + String(_chunkLengthMeters) + " chunk" + getChunkName() + ".csv";
+    return "/" + dataType + " " + String(_chunkLengthMeters) + "x" + String(_chunkLengthMeters) + " " + getChunkName() + ".csv";
 }
 
 void DataManager::reloadCache()
 {
+    /*
     _wifiChunkCache.clear();
     _wifiChunkCache = _sdCard->readAllLines(getChunkFileName("WiFi"));
 
     _btChunkCache.clear();
     _btChunkCache = _sdCard->readAllLines(getChunkFileName("Bluetooth"));
+    */
 }
 
 void DataManager::updateChunkAndReloadCache()
@@ -50,9 +54,9 @@ void DataManager::updateChunkAndReloadCache()
     }
 }
 
-int DataManager::autosend(vector<WiFiNetwork> networks)
+int DataManager::saveNewEntries(vector<WiFiNetwork> networks)
 {
-    updateChunkAndReloadCache();
+    //updateChunkAndReloadCache();
     // if (!isOriginChunk()) // Don't save data on SD if origin chunk (@[0, 0])
     {
         return cacheNewEntriesToSD(networks);
@@ -60,9 +64,9 @@ int DataManager::autosend(vector<WiFiNetwork> networks)
     return 0;
 }
 
-int DataManager::autosend(vector<BluetoothDevice> devices)
+int DataManager::saveNewEntries(vector<BluetoothDevice> devices)
 {
-    updateChunkAndReloadCache();
+    //updateChunkAndReloadCache();
     // if (!isOriginChunk())
     {
         return cacheNewEntriesToSD(devices);
@@ -70,11 +74,11 @@ int DataManager::autosend(vector<BluetoothDevice> devices)
     return 0;
 }
 
-bool DataManager::listHasElementContaining(vector<String> list, String s)
+bool DataManager::listHasElement(String list[CACHE_SIZE], int size, String s)
 {
-    for (int i = 0; i < list.size(); i++)
+    for (int i = 0; i < size; i++)
     {
-        if (list[i].indexOf(s) > 0)
+        if (list[i].equals(s))
         {
             return true;
         }
@@ -82,16 +86,32 @@ bool DataManager::listHasElementContaining(vector<String> list, String s)
     return false;
 }
 
+void DataManager::addToCache(String (&cache)[CACHE_SIZE], int &size, String s)
+{
+    //delete(cache[size % CACHE_SIZE]);
+    incrementCurrentlyCachedIfNotFull(size);
+    cache[size % CACHE_SIZE] = s;
+}
+
+void DataManager::incrementCurrentlyCachedIfNotFull(int& count)
+{
+    if (count < CACHE_SIZE - 1)
+    {
+        count++;
+    }
+}
+
 int DataManager::cacheNewEntriesToSD(vector<WiFiNetwork> networks)
 {
     int added = 0;
     for (int i = 0; i < networks.size(); i++)
     {
-        if (!listHasElementContaining(_wifiChunkCache, networks[i].BSSID))
+        if (!listHasElement(_wifiChunkCache, _currentlyCachedWifi, networks[i].BSSID))
         {
             String s = networks[i].toString() + ',' + _gpsService->generateLocationCSV();
-            _sdCard->appendFile(getChunkFileName("WiFi"), s);
-            _wifiChunkCache.push_back(s);
+            //_sdCard->appendFile(getChunkFileName("WiFi"), s);
+            _sdCard->appendFile("/WiFi.csv", s);
+            addToCache(_wifiChunkCache, _currentlyCachedWifi, networks[i].BSSID);
             added++;
         }
     }
@@ -103,11 +123,12 @@ int DataManager::cacheNewEntriesToSD(vector<BluetoothDevice> devices)
     int added = 0;
     for (int i = 0; i < devices.size(); i++)
     {
-        if (!listHasElementContaining(_btChunkCache, devices[i].address))
+        if (!listHasElement(_btChunkCache, _currentlyCachedBluetooth, devices[i].address))
         {
             String s = _gpsService->generateLocationCSV() + "," + devices[i].toString();
-            _sdCard->appendFile(getChunkFileName("Bluetooth"), s);
-            _btChunkCache.push_back(s);
+            //_sdCard->appendFile(getChunkFileName("Bluetooth"), s);
+            _sdCard->appendFile("/Bluetooth.csv", s);
+            addToCache(_btChunkCache, _currentlyCachedBluetooth, devices[i].address);
             added++;
         }
     }

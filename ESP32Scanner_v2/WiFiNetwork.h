@@ -2,6 +2,8 @@
 #define WiFiNetwork_h_
 #include "Arduino.h"
 
+#include "StringableObject.h"
+
 class WiFiNetwork
 {
 public:

@@ -2,6 +2,7 @@
 #define BluetoothDevice_h_
 
 #include "Arduino.h"
+#include "StringableObject.h"
 
 class BluetoothDevice
 {
