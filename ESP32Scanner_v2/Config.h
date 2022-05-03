@@ -6,8 +6,8 @@
 class Config
 {
 public:
-    int totalWiFiNetworks = 0;
-    int totalBluetoothDevices = 0;
+    unsigned long int totalWiFiNetworks = 0;
+    unsigned long int totalBluetoothDevices = 0;
 };
 
 #endif

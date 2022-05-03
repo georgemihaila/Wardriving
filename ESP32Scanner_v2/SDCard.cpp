@@ -38,10 +38,10 @@ void SDCard::appendFile(const char *path, const char *message)
             {
                 errorCount = 0;
                 ok = true;
-                
+                /*
                 Serial.print(message);
                 Serial.print(" > ");
-                Serial.println(path);
+                Serial.println(path);*/
             }
             else
             {

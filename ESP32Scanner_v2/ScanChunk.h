@@ -22,10 +22,10 @@ public:
   };
   virtual bool hasUpdate();
   virtual void update(TFT_eSPI *tft);
-  int networksAround = 0;
-  int newNetworks = 0;
-  int totalNetworks = 0;
-  int totalScans = 0;
+  unsigned long int networksAround = 0;
+  unsigned long int newNetworks = 0;
+  unsigned long int totalNetworks = 0;
+  unsigned long int totalScans = 0;
   String dataType;
   
   void addNSatellites(int nSatellites);

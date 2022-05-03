@@ -27,6 +27,7 @@ void autosendIfHomeAfterStartup()
 {
   if (_wifiService->initWiFi(0))
   {
+    _api = new API("http://10.10.0.241:6488/"); //Initialize api after connecting to wifi, otherwise it won't send anything
     _api->createNewSession();
     _dataManager->sendCollectedDataToServer(_display);
   }
@@ -42,7 +43,6 @@ void initializeServices()
   _bluetoothScanner = new BluetoothScanner();
   _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner, _bluetoothScanner);
   _sdCard = new SDCard();
-  _api = new API("http://10.10.0.241:6488/");
   _dataManager = new DataManager(_sdCard, _gpsService, _api);
   _scanService = new ScanService(_wifiScanner, _bluetoothScanner, _gpsService, _dataManager, autosendIfHomeAfterStartup);
 }
