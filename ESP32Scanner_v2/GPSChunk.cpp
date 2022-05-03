@@ -30,9 +30,9 @@ void GPSChunk::update(TFT_eSPI *tft)
     tft->setCursor(0, 100, 2);
     if (_gpsService->latitude != 0 && _gpsService->longitude != 0)
     {
-      tft->println("X: " + String(int(this->_gpsService->getXMetersFromOrigin() / 10)));
+      tft->println("X: " + String(int(this->_gpsService->getXMetersFromOrigin() / 100)));
       tft->setCursor(0, 120, 2);
-      tft->println("Y: " + String(int(this->_gpsService->getYMetersFromOrigin() / 10)));
+      tft->println("Y: " + String(int(this->_gpsService->getYMetersFromOrigin() / 100)));
     }
   }
 }

@@ -58,3 +58,16 @@ vector<WiFiNetwork> WiFiScanner::getResults()
   }
   return result;
 }
+
+bool WiFiScanner::homeNetworkAround()
+{
+  vector<WiFiNetwork> networks = getResults();
+  for (int i = 0; i < networks.size(); i++)
+  {
+    if (networks[i].SSID.equals("CCE_24"))
+    {
+      return true;
+    }
+  }
+  return false;
+}

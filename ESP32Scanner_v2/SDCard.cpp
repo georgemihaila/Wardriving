@@ -38,10 +38,10 @@ void SDCard::appendFile(const char *path, const char *message)
             {
                 errorCount = 0;
                 ok = true;
-                /*
+                
                 Serial.print(message);
                 Serial.print(" > ");
-                Serial.println(path);*/
+                Serial.println(path);
             }
             else
             {
@@ -90,24 +90,49 @@ String SDCard::getUsedSpace()
     return String(used) + "MB/" + String(total) + "MB";
 }
 
-void SDCard::sendAllLines(String path, String dataType, API *api, TFTDisplay *display, int y)
+bool SDCard::renameFile(const char *path1, const char *path2)
 {
-    String buffer;
-    File file = SD.open(path);
-    if (!file)
+    Serial.printf("Renaming file %s to %s\n", path1, path2);
+    return SD.rename(path1, path2);
+}
+
+void SDCard::sendAllLinesFor(String dataType, API *api, TFTDisplay *display, int y)
+{
+    display->clear();
+    vector<String> files = listDir("/", 0);
+    vector<String> targetFiles;
+    for (int i = 0; i < files.size(); i++)
     {
-        Serial.println("Can't open " + String(path));
+        if (files[i].startsWith("/" + dataType))
+        {
+            // Serial.println("Will send " + files[i]);
+            String buffer;
+            File file = SD.open(files[i]);
+            if (!file)
+            {
+                Serial.println("Can't open " + String(files[i]));
+            }
+            int line = 0;
+            while (file.available())
+            {
+                line++;
+                buffer = file.readStringUntil('\n');
+                buffer.trim();
+                display->printAt(files[i] + "\n" + String(line), 0, y + 20);
+                int result = api->postData(buffer, dataType);
+                if (result == 201)
+                {
+                    appendFile("/Sent " + dataType + ".csv", buffer);
+                }
+                else
+                {
+                    appendFile("/Failed " + dataType + ".csv", buffer);
+                }
+            }
+            file.close();
+            deleteFile(files[i]);
+        }
     }
-    int line = 0;
-    while (file.available())
-    {
-        line++;
-        buffer = file.readStringUntil('\n');
-        buffer.trim();
-        display->printAt(String(line), 0, y);
-        api->postData(buffer, dataType);
-    }
-    file.close();
 }
 
 int SDCard::getNumberOfLines(String filename)
@@ -152,8 +177,8 @@ vector<String> SDCard::listDir(const char *dirname, uint8_t levels)
     {
         if (file.isDirectory())
         {
-            Serial.print("  DIR : ");
-            Serial.println(file.name());
+            // Serial.print("  DIR : ");
+            // Serial.println(file.name());
             if (levels)
             {
                 vector<String> subdirs = listDir(file.name(), levels - 1);
@@ -166,7 +191,7 @@ vector<String> SDCard::listDir(const char *dirname, uint8_t levels)
         else
         {
             result.push_back(file.name());
-            Serial.println(file.name());
+            // Serial.println(file.name());
         }
         file = root.openNextFile();
     }

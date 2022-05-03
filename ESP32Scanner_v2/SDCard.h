@@ -19,11 +19,12 @@ public:
     bool deleteFile(String path);
     vector<String> readAllLines(String path);
     vector<String> readAllLines(const char *path);
-    void sendAllLines(String path, String dataType, API *api, TFTDisplay *display, int y);
+    void sendAllLinesFor(String dataType, API *api, TFTDisplay *display, int y);
     String getUsedSpace();
     int getNumberOfLines(String filename);
     bool removeDir(const char *path);
     bool createDir(const char *path);
+    bool renameFile(const char * path1, const char * path2);
     vector<String> listDir(const char *dirname, uint8_t levels);
     String readFile(String filename);
 

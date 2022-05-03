@@ -15,6 +15,7 @@ public:
   };
   void scanAsync();
   bool scanCompleted();
+  bool homeNetworkAround();
   vector<WiFiNetwork> getResults();
 };
 

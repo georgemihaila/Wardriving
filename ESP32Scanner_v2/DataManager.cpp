@@ -38,43 +38,16 @@ String DataManager::getChunkFileName(String dataType)
     return "/" + dataType + " " + String(_chunkLengthMeters) + "x" + String(_chunkLengthMeters) + " " + getChunkName() + ".csv";
 }
 
-void DataManager::reloadCache()
-{
-    /*
-    _wifiChunkCache.clear();
-    _wifiChunkCache = _sdCard->readAllLines(getChunkFileName("WiFi"));
-
-    _btChunkCache.clear();
-    _btChunkCache = _sdCard->readAllLines(getChunkFileName("Bluetooth"));
-    */
-}
-
-void DataManager::updateChunkAndReloadCache()
-{
-    if (updateChunk())
-    {
-        reloadCache();
-    }
-}
-
 int DataManager::saveNewEntries(vector<WiFiNetwork> networks)
 {
-    // updateChunkAndReloadCache();
-    //  if (!isOriginChunk()) // Don't save data on SD if origin chunk (@[0, 0])
-    {
-        return cacheNewEntriesToSD(networks);
-    }
-    return 0;
+    updateChunk();
+    return cacheNewEntriesToSD(networks);
 }
 
 int DataManager::saveNewEntries(vector<BluetoothDevice> devices)
 {
-    // updateChunkAndReloadCache();
-    //  if (!isOriginChunk())
-    {
-        return cacheNewEntriesToSD(devices);
-    }
-    return 0;
+    updateChunk();
+    return cacheNewEntriesToSD(devices);
 }
 
 bool DataManager::listHasElement(String list[CACHE_SIZE], int size, String s)
@@ -112,8 +85,8 @@ int DataManager::cacheNewEntriesToSD(vector<WiFiNetwork> networks)
         if (!listHasElement(_wifiChunkCache, _currentlyCachedWifi, networks[i].BSSID))
         {
             String s = networks[i].toString() + ',' + _gpsService->generateLocationCSV();
-            //_sdCard->appendFile(getChunkFileName("WiFi"), s);
-            _sdCard->appendFile(WIFI_FILENAME, s);
+            _sdCard->appendFile(getChunkFileName(WIFI_FILENAME), s);
+            //_sdCard->appendFile(WIFI_FILENAME, s);
             addToCache(_wifiChunkCache, _currentlyCachedWifi, networks[i].BSSID);
             added++;
         }
@@ -129,8 +102,8 @@ int DataManager::cacheNewEntriesToSD(vector<BluetoothDevice> devices)
         if (!listHasElement(_btChunkCache, _currentlyCachedBluetooth, devices[i].address))
         {
             String s = _gpsService->generateLocationCSV() + "," + devices[i].toString();
-            //_sdCard->appendFile(getChunkFileName("Bluetooth"), s);
-            _sdCard->appendFile(BT_FILENAME, s);
+            _sdCard->appendFile(getChunkFileName(BT_FILENAME), s);
+            //_sdCard->appendFile(BT_FILENAME, s);
             addToCache(_btChunkCache, _currentlyCachedBluetooth, devices[i].address);
             added++;
         }
@@ -145,9 +118,9 @@ void lineRead(String line)
 void DataManager::sendCollectedDataToServer(TFTDisplay *display)
 {
     display->printAt("WiFi data...", 0, 80);
-    _sdCard->sendAllLines(WIFI_FILENAME, "WiFi", _api, display, 100);
+    _sdCard->sendAllLinesFor("WiFi", _api, display, 0);
     display->printAt("Bluetooth data...", 0, 120);
-    _sdCard->sendAllLines(BT_FILENAME, "Bluetooth", _api, display, 140);
+    _sdCard->sendAllLinesFor("Bluetooth", _api, display, 0);
 }
 
 Config DataManager::getConfig()

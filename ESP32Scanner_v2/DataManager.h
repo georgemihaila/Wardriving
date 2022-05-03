@@ -25,7 +25,7 @@ public:
     int saveNewEntries(vector<WiFiNetwork> networks);
     int saveNewEntries(vector<BluetoothDevice> devices);
     void sendCollectedDataToServer(TFTDisplay *display);
-
+    void listDir(fs::FS &fs, const char * dirname, uint8_t levels);
     Config getConfig();
     void setNumberOfTotalDevicesFound(int wifi, int bt);
 private:
@@ -33,7 +33,7 @@ private:
     GPSService *_gpsService;
     API *_api;
 
-    int _chunkLengthMeters = 10; // Square chunks; 30x30 seems to be too large
+    int _chunkLengthMeters = 100; // Square chunks
     bool isOriginChunk()
     {
         return _currentXChunk == 0 && _currentYChunk == 0;
@@ -45,8 +45,6 @@ private:
     int _currentlyCachedBluetooth = 0;
     String _wifiChunkCache[CACHE_SIZE];
     String _btChunkCache[CACHE_SIZE];
-    void reloadCache();
-    void updateChunkAndReloadCache();
     String getChunkName();
     String getChunkFileName(String dataType);
     void incrementCurrentlyCachedIfNotFull(int &count);

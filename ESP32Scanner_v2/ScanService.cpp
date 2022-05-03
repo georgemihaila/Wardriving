@@ -22,6 +22,13 @@ void ScanService::scan()
       _wifiScanner->chunk->newNetworks = newWiFis;
       _wifiScanner->chunk->totalNetworks += newWiFis;
 
+      //Autosend if home after first scan, don't try again otherwise. Should speed up boot time significantly
+      if (!firstWifiScanCompleted)
+      {
+        _autosendFunction();
+        firstWifiScanCompleted = true;
+      }
+
       _currentScan = BT;
       // Serial.println("Starting Bluetooth scan");
       _bluetoothScanner->scanAsync();
@@ -51,8 +58,13 @@ void ScanService::_cacheTotalNumberOfScans()
 {
   if (millis() - _lastTotalNumberOfScansCacheTimestamp >= _cacheTotalNumberOfScansEvery)
   {
-    _dataManager->setNumberOfTotalDevicesFound(_wifiScanner->chunk->totalNetworks, _bluetoothScanner->chunk->totalNetworks);
+    if (_lastCachedAtWifi != _wifiScanner->chunk->totalNetworks && _lastCachedAtBT != _bluetoothScanner->chunk->totalNetworks)
+    { //Don't write to SD unless new devices found
+      _lastCachedAtWifi = _wifiScanner->chunk->totalNetworks;
+      _lastCachedAtBT = _bluetoothScanner->chunk->totalNetworks;
+      _dataManager->setNumberOfTotalDevicesFound(_lastCachedAtWifi, _lastCachedAtBT);
+      Serial.println("Updated total number of scans");
+    }
     _lastTotalNumberOfScansCacheTimestamp = millis();
-    Serial.println("Updated total number of scans");
   }
 }
