@@ -105,7 +105,7 @@ void SDCard::sendAllLinesFor(String dataType, API *api, TFTDisplay *display, int
     {
         if (files[i].startsWith("/" + dataType))
         {
-            // Serial.println("Will send " + files[i]);
+            Serial.println("Sending " + files[i]);
             String buffer;
             File file = SD.open(files[i]);
             if (!file)

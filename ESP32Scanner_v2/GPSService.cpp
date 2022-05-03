@@ -103,6 +103,8 @@ void GPSService::update()
     updated = true;
   }
   nSatellites = gps.satellites.value();
+  speedMetersPerSecond = gps.speed.mps();
+  speedKmPerHour = gps.speed.kmph();
   _lastUpdatedAtMS = millis();
 }
 

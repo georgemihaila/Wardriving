@@ -25,6 +25,7 @@ void WiFiScanner::scanAsync()
   if (scanCompleted())
   {
     WiFi.scanDelete();
+    WiFi.mode(WIFI_STA);
     WiFi.scanNetworks(true, true);
   }
 }

@@ -6,11 +6,12 @@
 #include "WiFiService.h"
 #include "WiFiScanner.h"
 #include "BluetoothScanner.h"
+#include "ThreeWaySwitch.h"
 
 class SplashScreen : public Page
 {
 public:
-  SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiFiScanner *wifiScanner, BluetoothScanner* bluetoothScanner);
+  SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiFiScanner *wifiScanner, BluetoothScanner* bluetoothScanner, ThreeWaySwitch* modeThreeWaySwitch);
 };
 
 #endif

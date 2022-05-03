@@ -16,6 +16,8 @@ public:
   double longitude = 0;
   double latitude = 0;
   double altitude = 0;
+  double speedMetersPerSecond = 0;
+  double speedKmPerHour = 0;
   int nSatellites = 0;
   double getXMetersFromOrigin();
   double getYMetersFromOrigin();

@@ -9,7 +9,9 @@ class WiFiService
 public:
   bool initWiFi(int maxReattempts);
   bool makeSureWiFiConnectionUp();
-
+  void disconnect();
+  bool isConnected();
+  bool offlineMode = false;
 private:
   String IpAddress2String(const IPAddress &ipAddress);
 };

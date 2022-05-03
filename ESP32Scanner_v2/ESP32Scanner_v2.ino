@@ -11,6 +11,11 @@
 #include "SDCard.h"
 #include "DataManager.h"
 #include "Config.h"
+#include "ThreeWaySwitch.h"
+
+#define NORMAL 1
+#define QUICK_START 0
+#define NO_LOG 2
 
 TFTDisplay *_display;
 GPSService *_gpsService;
@@ -22,14 +27,18 @@ ScanService *_scanService;
 API *_api;
 SDCard *_sdCard;
 DataManager *_dataManager;
+ThreeWaySwitch *_modeThreeWaySwitch = new ThreeWaySwitch(21, 22, HIGH);
 
 void autosendIfHomeAfterStartup()
 {
+  if (_wifiService->offlineMode)
+    return;
+
   if (_wifiService->initWiFi(0))
   {
-    _api = new API("http://10.10.0.241:6488/"); //Initialize api after connecting to wifi, otherwise it won't send anything
     _api->createNewSession();
     _dataManager->sendCollectedDataToServer(_display);
+    _wifiService->disconnect();
   }
 }
 
@@ -41,16 +50,17 @@ void initializeServices()
   _wifiService = new WiFiService();
   _wifiScanner = new WiFiScanner();
   _bluetoothScanner = new BluetoothScanner();
-  _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner, _bluetoothScanner);
+  _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner, _bluetoothScanner, _modeThreeWaySwitch);
   _sdCard = new SDCard();
+  _api = new API("http://10.10.0.241:6488/");
   _dataManager = new DataManager(_sdCard, _gpsService, _api);
-  _scanService = new ScanService(_wifiScanner, _bluetoothScanner, _gpsService, _dataManager, autosendIfHomeAfterStartup);
+  _scanService = new ScanService(_wifiScanner, _bluetoothScanner, _gpsService, _dataManager, autosendIfHomeAfterStartup, _modeThreeWaySwitch);
 }
 
 void setup()
 {
   Serial.begin(115200);
-  // esp_log_level_set("*", ESP_LOG_INFO);
+  // esp_log_level_set("*", ESP_LOG_DEBUG);
   ESP_LOGI("*", "ESP32 up");
 
   initializeServices();
@@ -64,6 +74,15 @@ void setup()
   {
     _display->printAt("SD OK", 0, 20);
     _display->printAt("Usage: " + _sdCard->getUsedSpace(), 0, 40);
+  }
+
+  if (_modeThreeWaySwitch->getState() != QUICK_START)
+  {
+    autosendIfHomeAfterStartup(); // Use this method for now
+  }
+  else if (_modeThreeWaySwitch == QUICK_START)
+  {
+    _wifiService->offlineMode = true;
   }
 
   Config config = _dataManager->getConfig();
@@ -80,6 +99,4 @@ void loop()
   _display->render(_splashScreen);
   _gpsService->update();
   _scanService->scan();
-  yield();
-  ESP_LOGI("*", "\n" + String(ESP.getFreeHeap() / 1024) + "kB");
 }

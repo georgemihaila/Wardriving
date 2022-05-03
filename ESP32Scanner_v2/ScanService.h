@@ -8,17 +8,19 @@
 #include <vector>
 using namespace std;
 #include "DataManager.h"
+#include "ThreeWaySwitch.h"
 
 class ScanService
 {
 public:
-  ScanService(WiFiScanner *wifiScanner, BluetoothScanner *bluetoothScanner, GPSService* gpsService, DataManager* dataManager, void (*autosendFunction)())
+  ScanService(WiFiScanner *wifiScanner, BluetoothScanner *bluetoothScanner, GPSService* gpsService, DataManager* dataManager, void (*autosendFunction)(), ThreeWaySwitch *modeThreeWaySwitch)
   {
     _wifiScanner = wifiScanner;
     _bluetoothScanner = bluetoothScanner;
     _gpsService = gpsService;
     _dataManager = dataManager;
     _autosendFunction = autosendFunction;
+    _modeThreeWaySwitch = modeThreeWaySwitch;
 
     _wifiScanner->scanAsync();
   };
@@ -42,6 +44,7 @@ private:
   BluetoothScanner *_bluetoothScanner;
   GPSService* _gpsService;
   DataManager* _dataManager;
+  ThreeWaySwitch *_modeThreeWaySwitch;
 };
 
 #endif

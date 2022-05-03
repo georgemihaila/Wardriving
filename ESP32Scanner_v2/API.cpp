@@ -7,7 +7,11 @@ int API::postJSON(String path, String json)
     _httpClient.addHeader("Content-Type", "application/json");
     int httpResponseCode = _httpClient.POST(json);
     _httpClient.end();
-    Serial.println("POST " + path + " - " + String(httpResponseCode));
+    Serial.println("POST " + serverPath + " - " + String(httpResponseCode));
+    if (httpResponseCode < 0)
+    {
+        Serial.println(_httpClient.errorToString(httpResponseCode).c_str());
+    }
     return httpResponseCode;
 }
 
@@ -19,8 +23,9 @@ int API::createNewSession()
 int API::postData(String data, String dataType)
 {
     bool isJSON = data[0] == '"';
-    if (!isJSON){
-      data = "\"" + data + "\"";
+    if (!isJSON)
+    {
+        data = "\"" + data + "\"";
     }
     return postJSON(dataType + "/ProcessRawString", data);
 }

@@ -6,7 +6,7 @@
 
 void WiFiChunk::update(TFT_eSPI *tft)
 {
-  bool connected = _wifiService->makeSureWiFiConnectionUp();
+  bool connected = _wifiService->isConnected();
   tft->setTextSize(1);
   tft->setTextColor(TFT_WHITE, TFT_BLACK);
   tft->setCursor(12, 0, 2);
