@@ -15,3 +15,12 @@ int API::createNewSession()
 {
     return postJSON("Session/CreateNewSession", "{}");
 }
+
+int API::postData(String data, String dataType)
+{
+    bool isJSON = data[0] == '"';
+    if (!isJSON){
+      data = "\"" + data + "\"";
+    }
+    return postJSON(dataType + "/ProcessRawString", data);
+}

@@ -22,9 +22,17 @@ public:
     _wifiScanner->scanAsync();
   };
   void scan();
-
+  void setPreviousScanCounts(int wifi, int bt)
+  {
+    _wifiScanner->chunk->totalNetworks = wifi;
+    _bluetoothScanner->chunk->totalNetworks = bt;
+  }
 private:
   int _currentScan = 0;
+  int _lastTotalNumberOfScansCacheTimestamp = 0;
+  int _cacheTotalNumberOfScansEvery = 10000; //100,000 writes is 27 hours @1/s
+  void _cacheTotalNumberOfScans();
+
   WiFiScanner *_wifiScanner;
   BluetoothScanner *_bluetoothScanner;
   GPSService* _gpsService;

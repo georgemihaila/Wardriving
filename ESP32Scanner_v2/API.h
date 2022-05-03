@@ -12,6 +12,7 @@ class API
             _endpoint = endpoint;
         }
         int createNewSession();
+        int postData(String data, String dataType);
     private:
         String _endpoint;
         int postJSON(String path, String json);

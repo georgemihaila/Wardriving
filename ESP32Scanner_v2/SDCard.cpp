@@ -1,5 +1,6 @@
 #include "SDCard.h"
 #include <Arduino.h>
+#include "FS.h"
 
 #define HSPI_MISO 27
 #define HSPI_MOSI 26
@@ -37,9 +38,10 @@ void SDCard::appendFile(const char *path, const char *message)
             {
                 errorCount = 0;
                 ok = true;
+                /*
                 Serial.print(message);
                 Serial.print(" > ");
-                Serial.println(path);
+                Serial.println(path);*/
             }
             else
             {
@@ -79,4 +81,165 @@ vector<String> SDCard::readAllLines(const char *path)
     }
     file.close();
     return result;
+}
+
+String SDCard::getUsedSpace()
+{
+    int used = SD.usedBytes() / (1024 * 1024);
+    int total = SD.totalBytes() / (1024 * 1024);
+    return String(used) + "MB/" + String(total) + "MB";
+}
+
+void SDCard::sendAllLines(String path, String dataType, API *api, TFTDisplay *display, int y)
+{
+    String buffer;
+    File file = SD.open(path);
+    if (!file)
+    {
+        Serial.println("Can't open " + String(path));
+    }
+    int line = 0;
+    while (file.available())
+    {
+        line++;
+        buffer = file.readStringUntil('\n');
+        buffer.trim();
+        display->printAt(String(line), 0, y);
+        api->postData(buffer, dataType);
+    }
+    file.close();
+}
+
+int SDCard::getNumberOfLines(String filename)
+{
+    File file = SD.open(filename);
+    if (!file)
+    {
+        Serial.println("Can't open " + filename);
+        return 0;
+    }
+    int line = 0;
+    String buffer;
+    while (file.available())
+    {
+        line++;
+        buffer = file.readStringUntil('\n');
+    }
+    file.close();
+    return line;
+}
+
+vector<String> SDCard::listDir(const char *dirname, uint8_t levels)
+{
+
+    vector<String> result;
+    Serial.printf("Listing directory: %s\n", dirname);
+
+    File root = SD.open(dirname);
+    if (!root)
+    {
+        Serial.println("Failed to open directory");
+        return result;
+    }
+    if (!root.isDirectory())
+    {
+        Serial.println("Not a directory");
+        return result;
+    }
+
+    File file = root.openNextFile();
+    while (file)
+    {
+        if (file.isDirectory())
+        {
+            Serial.print("  DIR : ");
+            Serial.println(file.name());
+            if (levels)
+            {
+                vector<String> subdirs = listDir(file.name(), levels - 1);
+                for (int i = 0; i < subdirs.size(); i++)
+                {
+                    result.push_back(subdirs[i]);
+                }
+            }
+        }
+        else
+        {
+            result.push_back(file.name());
+            Serial.println(file.name());
+        }
+        file = root.openNextFile();
+    }
+    return result;
+}
+
+bool SDCard::createDir(const char *path)
+{
+
+    Serial.printf("Creating Dir: %s\n", path);
+    if (SD.mkdir(path))
+    {
+        Serial.println("Dir created");
+        return true;
+    }
+    else
+    {
+        Serial.println("mkdir failed");
+        return false;
+    }
+}
+bool SDCard::removeDir(const char *path)
+{
+
+    Serial.printf("Removing Dir: %s\n", path);
+    if (SD.rmdir(path))
+    {
+        Serial.println("Dir removed");
+        return true;
+    }
+    else
+    {
+        Serial.println("rmdir failed");
+        return false;
+    }
+}
+
+String SDCard::readFile(String filename)
+{
+    File file = SD.open(filename);
+    if (!file)
+    {
+        Serial.println("Can't open " + filename);
+        return "";
+    }
+    int line = 0;
+    String result;
+    while (file.available())
+    {
+        line++;
+        result += file.readStringUntil('\n');
+    }
+    file.close();
+    return result;
+}
+
+bool SDCard::deleteFile(String path)
+{
+    Serial.print("Deleting file: " + path);
+    if (SD.remove(path))
+    {
+        Serial.println(" OK");
+        return true;
+    }
+    else
+    {
+        Serial.println(" FAIL");
+        return false;
+    }
+}
+
+void SDCard::writeFile(String path, String text)
+{
+    deleteFile(path);
+    appendFile(path, text);
 }

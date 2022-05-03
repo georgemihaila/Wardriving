@@ -1,6 +1,9 @@
 #include "DataManager.h"
-
+#include "ArduinoJson.h"
 #define CACHE_SIZE 50
+
+#define WIFI_FILENAME "/WiFi.csv"
+#define BT_FILENAME "/Bluetooth.csv"
 
 bool DataManager::updateChunk()
 {
@@ -56,8 +59,8 @@ void DataManager::updateChunkAndReloadCache()
 
 int DataManager::saveNewEntries(vector<WiFiNetwork> networks)
 {
-    //updateChunkAndReloadCache();
-    // if (!isOriginChunk()) // Don't save data on SD if origin chunk (@[0, 0])
+    // updateChunkAndReloadCache();
+    //  if (!isOriginChunk()) // Don't save data on SD if origin chunk (@[0, 0])
     {
         return cacheNewEntriesToSD(networks);
     }
@@ -66,8 +69,8 @@ int DataManager::saveNewEntries(vector<WiFiNetwork> networks)
 
 int DataManager::saveNewEntries(vector<BluetoothDevice> devices)
 {
-    //updateChunkAndReloadCache();
-    // if (!isOriginChunk())
+    // updateChunkAndReloadCache();
+    //  if (!isOriginChunk())
     {
         return cacheNewEntriesToSD(devices);
     }
@@ -88,12 +91,12 @@ bool DataManager::listHasElement(String list[CACHE_SIZE], int size, String s)
 
 void DataManager::addToCache(String (&cache)[CACHE_SIZE], int &size, String s)
 {
-    //delete(cache[size % CACHE_SIZE]);
+    // delete(cache[size % CACHE_SIZE]);
     incrementCurrentlyCachedIfNotFull(size);
     cache[size % CACHE_SIZE] = s;
 }
 
-void DataManager::incrementCurrentlyCachedIfNotFull(int& count)
+void DataManager::incrementCurrentlyCachedIfNotFull(int &count)
 {
     if (count < CACHE_SIZE - 1)
     {
@@ -110,7 +113,7 @@ int DataManager::cacheNewEntriesToSD(vector<WiFiNetwork> networks)
         {
             String s = networks[i].toString() + ',' + _gpsService->generateLocationCSV();
             //_sdCard->appendFile(getChunkFileName("WiFi"), s);
-            _sdCard->appendFile("/WiFi.csv", s);
+            _sdCard->appendFile(WIFI_FILENAME, s);
             addToCache(_wifiChunkCache, _currentlyCachedWifi, networks[i].BSSID);
             added++;
         }
@@ -127,10 +130,59 @@ int DataManager::cacheNewEntriesToSD(vector<BluetoothDevice> devices)
         {
             String s = _gpsService->generateLocationCSV() + "," + devices[i].toString();
             //_sdCard->appendFile(getChunkFileName("Bluetooth"), s);
-            _sdCard->appendFile("/Bluetooth.csv", s);
+            _sdCard->appendFile(BT_FILENAME, s);
             addToCache(_btChunkCache, _currentlyCachedBluetooth, devices[i].address);
             added++;
         }
     }
     return added;
+}
+
+void lineRead(String line)
+{
+}
+
+void DataManager::sendCollectedDataToServer(TFTDisplay *display)
+{
+    display->printAt("WiFi data...", 0, 80);
+    _sdCard->sendAllLines(WIFI_FILENAME, "WiFi", _api, display, 100);
+    display->printAt("Bluetooth data...", 0, 120);
+    _sdCard->sendAllLines(BT_FILENAME, "Bluetooth", _api, display, 140);
+}
+
+Config DataManager::getConfig()
+{
+    String input = _sdCard->readFile("/config.json");
+    StaticJsonDocument<96> doc;
+
+    input.trim();
+    Serial.println("JSON config file: |" + input + "|");
+    DeserializationError error = deserializeJson(doc, input);
+    Config result;
+    if (error)
+    {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+        setNumberOfTotalDevicesFound(5217, 5258);
+        result.totalWiFiNetworks = 5217;
+        result.totalBluetoothDevices = 5258;
+    }
+    else
+    {
+        int totalWiFiNetworks = doc["totalWiFiNetworks"];         // 0
+        int totalBluetoothDevices = doc["totalBluetoothDevices"]; // 0
+        result.totalWiFiNetworks = totalWiFiNetworks;
+        result.totalBluetoothDevices = totalBluetoothDevices;
+    }
+    return result;
+}
+
+void DataManager::setNumberOfTotalDevicesFound(int wifi, int bt)
+{
+    StaticJsonDocument<32> doc;
+    doc["totalWiFiNetworks"] = wifi;
+    doc["totalBluetoothDevices"] = bt;
+    String output;
+    serializeJson(doc, output);
+    _sdCard->writeFile("/config.json", output);
 }

@@ -10,6 +10,7 @@
 #include "API.h"
 #include "SDCard.h"
 #include "DataManager.h"
+#include "Config.h"
 
 TFTDisplay *_display;
 GPSService *_gpsService;
@@ -20,7 +21,7 @@ BluetoothScanner *_bluetoothScanner;
 ScanService *_scanService;
 API *_api;
 SDCard *_sdCard;
-DataManager* _dataManager;
+DataManager *_dataManager;
 
 // Use this because some methods use serial before Serial.begin(...)
 void initializeServices()
@@ -32,7 +33,7 @@ void initializeServices()
   _bluetoothScanner = new BluetoothScanner();
   _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner, _bluetoothScanner);
   _sdCard = new SDCard();
-   _api = new API("http://10.10.0.241:6488/");
+  _api = new API("http://10.10.0.241:6488/");
   _dataManager = new DataManager(_sdCard, _gpsService, _api);
   _scanService = new ScanService(_wifiScanner, _bluetoothScanner, _gpsService, _dataManager);
 }
@@ -40,7 +41,7 @@ void initializeServices()
 void setup()
 {
   Serial.begin(115200);
-  esp_log_level_set("*", ESP_LOG_INFO);
+  //esp_log_level_set("*", ESP_LOG_INFO);
   ESP_LOGI("*", "ESP32 up");
 
   initializeServices();
@@ -53,13 +54,26 @@ void setup()
   else
   {
     _display->printAt("SD OK", 0, 20);
-  }
-  if (_wifiService->initWiFi(0))
-  {
-     _display->printAt("WiFi OK", 0, 40);
-    _api->createNewSession();
+    _display->printAt("Usage: " + _sdCard->getUsedSpace(), 0, 40);
   }
 
+  Config config = _dataManager->getConfig();
+  int prevWiFi = config.totalWiFiNetworks;
+  int prevBT = config.totalBluetoothDevices;
+  _scanService->setPreviousScanCounts(prevWiFi, prevBT);
+  Serial.println("Previous WIFI: " + String(prevWiFi));
+  Serial.println("Previous BT: " + String(prevBT));
+
+  if (_wifiService->initWiFi(0))
+  {
+    _display->printAt("WiFi OK", 0, 60);
+    _api->createNewSession();
+    //_dataManager->sendCollectedDataToServer(_display);
+  }
+  else
+  {
+    _display->printAt("WiFi disconnected", 0, 60);
+  }
   _display->clear();
 }
 

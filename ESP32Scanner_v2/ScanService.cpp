@@ -23,7 +23,7 @@ void ScanService::scan()
       _wifiScanner->chunk->totalNetworks += newWiFis;
 
       _currentScan = BT;
-      //Serial.println("Starting Bluetooth scan");
+      // Serial.println("Starting Bluetooth scan");
       _bluetoothScanner->scanAsync();
     }
   }
@@ -35,13 +35,24 @@ void ScanService::scan()
       _bluetoothScanner->chunk->networksAround = _bluetoothScanner->getResults().size();
 
       int newBTs = _dataManager->saveNewEntries(_bluetoothScanner->getResults());
-      _bluetoothScanner->chunk->addNSatellites(_gpsService->nSatellites); //Maybe we could not use two arrays
+      _bluetoothScanner->chunk->addNSatellites(_gpsService->nSatellites); // Maybe we could not use two arrays
       _bluetoothScanner->chunk->newNetworks = newBTs;
       _bluetoothScanner->chunk->totalNetworks += newBTs;
 
       _currentScan = WIFI;
-      //Serial.println("Starting WiFi scan");
+      // Serial.println("Starting WiFi scan");
       _wifiScanner->scanAsync();
     }
+  }
+  _cacheTotalNumberOfScans();
+}
+
+void ScanService::_cacheTotalNumberOfScans()
+{
+  if (millis() - _lastTotalNumberOfScansCacheTimestamp >= _cacheTotalNumberOfScansEvery)
+  {
+    _dataManager->setNumberOfTotalDevicesFound(_wifiScanner->chunk->totalNetworks, _bluetoothScanner->chunk->totalNetworks);
+    _lastTotalNumberOfScansCacheTimestamp = millis();
+    Serial.println("Updated total number of scans");
   }
 }
