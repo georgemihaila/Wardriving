@@ -12,6 +12,11 @@ public:
   virtual vector<T> getResults();
   virtual bool scanCompleted();
   ScanChunk *chunk;
+  unsigned long _lastScanStartedAt = 0;
+  unsigned long int getTimeSinceLastScanStarted()
+  {
+    return millis() - _lastScanStartedAt;
+  }
 };
 
 #endif

@@ -24,16 +24,22 @@ void WiFiScanner::scanAsync()
 {
   if (scanCompleted())
   {
+    _lastScanStartedAt = millis();
     WiFi.scanDelete();
     WiFi.mode(WIFI_STA);
+    WiFi.disconnect();
     WiFi.scanNetworks(true, true);
+    if (!_firstScanRan)
+    {
+      _firstScanRan = true;
+    }
   }
 }
 
 bool WiFiScanner::scanCompleted()
 {
   int8_t result = WiFi.scanComplete();
-  if (result == WIFI_SCAN_RUNNING || result == WIFI_SCAN_FAILED)
+  if (result == WIFI_SCAN_RUNNING)
   {
     return false;
   }

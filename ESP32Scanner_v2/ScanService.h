@@ -33,13 +33,13 @@ public:
 private:
   int _currentScan = 0;
   int _lastTotalNumberOfScansCacheTimestamp = 0;
-  int _cacheTotalNumberOfScansEvery = 10000; //100,000 writes is 27 hours @1/s
+  int _cacheTotalNumberOfDevicesEvery = 10000; //100,000 writes is 27 hours @1/s
   int _lastCachedAtWifi = 0;
   int _lastCachedAtBT = 0;
-  void _cacheTotalNumberOfScans();
+  void _cacheTotalNumberOfDevices();
   void (*_autosendFunction)();
   bool firstWifiScanCompleted = false;
-
+  
   WiFiScanner *_wifiScanner;
   BluetoothScanner *_bluetoothScanner;
   GPSService* _gpsService;

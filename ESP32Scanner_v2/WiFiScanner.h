@@ -17,6 +17,8 @@ public:
   bool scanCompleted();
   bool homeNetworkAround();
   vector<WiFiNetwork> getResults();
+private:
+  bool _firstScanRan = false; //Scan doesn't start in QS mode unless explicitly specified
 };
 
 #endif

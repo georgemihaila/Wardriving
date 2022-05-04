@@ -26,6 +26,7 @@ public:
   unsigned long int newNetworks = 0;
   unsigned long int totalNetworks = 0;
   unsigned long int totalScans = 0;
+  unsigned long int lastScanTimeMs = 0;
   String dataType;
   
   void addNSatellites(int nSatellites);

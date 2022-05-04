@@ -17,21 +17,37 @@ void ScanService::scan()
     {
       _wifiScanner->chunk->totalScans++;
 
-      int newWiFis = _dataManager->saveNewEntries(_wifiScanner->getResults());
+      vector<WiFiNetwork> networks = _wifiScanner->getResults();
+      int newWiFis = _dataManager->saveNewEntries(networks);
       _wifiScanner->chunk->addNSatellites(_gpsService->nSatellites);
       _wifiScanner->chunk->newNetworks = newWiFis;
       _wifiScanner->chunk->totalNetworks += newWiFis;
+      _wifiScanner->chunk->lastScanTimeMs = _wifiScanner->getTimeSinceLastScanStarted();
 
-      //Autosend if home after first scan, don't try again otherwise. Should speed up boot time significantly
+      // Autosend if home after first scan, don't try again otherwise. Should speed up boot time significantly
       if (!firstWifiScanCompleted)
       {
-        _autosendFunction();
+        if (_modeThreeWaySwitch->getState() != 0) // no sending in QS mode
+        {
+          if (_wifiScanner->homeNetworkAround())
+          {
+            _autosendFunction();
+          }
+        }
         firstWifiScanCompleted = true;
       }
 
-      _currentScan = BT;
-      // Serial.println("Starting Bluetooth scan");
-      _bluetoothScanner->scanAsync();
+      // Don't do BT scans if we're moving relatively fast, we care more about WiFi
+      if (_gpsService->speedMetersPerSecond < 5)
+      //if (false)
+      {
+        _currentScan = BT;
+        _bluetoothScanner->scanAsync();
+      }
+      else
+      {
+        _wifiScanner->scanAsync();
+      }
     }
   }
   else if (_currentScan == BT)
@@ -39,31 +55,32 @@ void ScanService::scan()
     if (_bluetoothScanner->scanCompleted())
     {
       _bluetoothScanner->chunk->totalScans++;
-      _bluetoothScanner->chunk->networksAround = _bluetoothScanner->getResults().size();
-
-      int newBTs = _dataManager->saveNewEntries(_bluetoothScanner->getResults());
+      
+      vector<BluetoothDevice> devices = _bluetoothScanner->getResults();
+      _bluetoothScanner->chunk->networksAround = devices.size();
+      int newBTs = _dataManager->saveNewEntries(devices);
       _bluetoothScanner->chunk->addNSatellites(_gpsService->nSatellites); // Maybe we could not use two arrays
       _bluetoothScanner->chunk->newNetworks = newBTs;
       _bluetoothScanner->chunk->totalNetworks += newBTs;
+      _bluetoothScanner->chunk->lastScanTimeMs = _bluetoothScanner->getTimeSinceLastScanStarted();
 
       _currentScan = WIFI;
-      // Serial.println("Starting WiFi scan");
       _wifiScanner->scanAsync();
     }
   }
-  _cacheTotalNumberOfScans();
+  _cacheTotalNumberOfDevices();
 }
 
-void ScanService::_cacheTotalNumberOfScans()
+void ScanService::_cacheTotalNumberOfDevices()
 {
-  if (millis() - _lastTotalNumberOfScansCacheTimestamp >= _cacheTotalNumberOfScansEvery)
+  if (millis() - _lastTotalNumberOfScansCacheTimestamp >= _cacheTotalNumberOfDevicesEvery)
   {
     if (_lastCachedAtWifi != _wifiScanner->chunk->totalNetworks && _lastCachedAtBT != _bluetoothScanner->chunk->totalNetworks)
-    { //Don't write to SD unless new devices found
+    { // Don't write to SD unless new devices found
       _lastCachedAtWifi = _wifiScanner->chunk->totalNetworks;
       _lastCachedAtBT = _bluetoothScanner->chunk->totalNetworks;
       _dataManager->setNumberOfTotalDevicesFound(_lastCachedAtWifi, _lastCachedAtBT);
-      Serial.println("Updated total number of scans");
+      // Serial.println("Updated total number of scans");
     }
     _lastTotalNumberOfScansCacheTimestamp = millis();
   }

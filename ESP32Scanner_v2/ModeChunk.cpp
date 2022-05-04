@@ -5,14 +5,14 @@
 
 void ModeChunk::update(TFT_eSPI *tft)
 {
-    String s = "QS";
+    String s = "Q";
     switch (_threeWaySwitch->getState())
     {
     case 1:
-        s = "N  ";
+        s = "N";
         break;
     case 2:
-        s = "NL";
+        s = "U";
         break;
     }
     tft->setTextSize(1);

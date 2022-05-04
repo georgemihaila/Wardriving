@@ -75,12 +75,8 @@ void setup()
     _display->printAt("SD OK", 0, 20);
     _display->printAt("Usage: " + _sdCard->getUsedSpace(), 0, 40);
   }
-
-  if (_modeThreeWaySwitch->getState() != QUICK_START)
-  {
-    autosendIfHomeAfterStartup(); // Use this method for now
-  }
-  else if (_modeThreeWaySwitch == QUICK_START)
+  Serial.println("Mode: " + String(_modeThreeWaySwitch->getState()));
+  if (_modeThreeWaySwitch == QUICK_START)
   {
     _wifiService->offlineMode = true;
   }

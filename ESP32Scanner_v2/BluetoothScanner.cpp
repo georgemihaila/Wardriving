@@ -28,10 +28,11 @@ void BluetoothScanner::scanAsync()
 {
   _isScanRunning = true;
   _btDevices.clear();
+  _lastScanStartedAt = millis();
 
   pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
   pBLEScan->setActiveScan(true);
-  pBLEScan->start(2, callback);
+  pBLEScan->start(1, callback);
 }
 
 vector<BluetoothDevice> BluetoothScanner::getResults()
