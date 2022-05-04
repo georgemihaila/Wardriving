@@ -13,7 +13,7 @@ using namespace std;
 class ScanService
 {
 public:
-  ScanService(WiFiScanner *wifiScanner, BluetoothScanner *bluetoothScanner, GPSService* gpsService, DataManager* dataManager, void (*autosendFunction)(), ThreeWaySwitch *modeThreeWaySwitch)
+  ScanService(WiFiScanner *wifiScanner, BluetoothScanner *bluetoothScanner, GPSService* gpsService, DataManager* dataManager, void (*autosendFunction)(), ThreeWaySwitch *modeThreeWaySwitch, ThreeWaySwitch *scanTypeThreeWaySwitch)
   {
     _wifiScanner = wifiScanner;
     _bluetoothScanner = bluetoothScanner;
@@ -21,6 +21,7 @@ public:
     _dataManager = dataManager;
     _autosendFunction = autosendFunction;
     _modeThreeWaySwitch = modeThreeWaySwitch;
+    _scanTypeThreeWaySwitch = scanTypeThreeWaySwitch;
 
     _wifiScanner->scanAsync();
   };
@@ -45,6 +46,7 @@ private:
   GPSService* _gpsService;
   DataManager* _dataManager;
   ThreeWaySwitch *_modeThreeWaySwitch;
+  ThreeWaySwitch *_scanTypeThreeWaySwitch;
 };
 
 #endif

@@ -10,8 +10,9 @@
 #include "BluetoothScanner.h"
 #include "ThreeWaySwitch.h"
 #include "ModeChunk.h"
+#include "ScanTypeChunk.h"
 
-SplashScreen::SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiFiScanner *wifiScanner, BluetoothScanner* bluetoothScanner, ThreeWaySwitch* modeThreeWaySwitch)
+SplashScreen::SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiFiScanner *wifiScanner, BluetoothScanner* bluetoothScanner, ThreeWaySwitch* modeThreeWaySwitch, ThreeWaySwitch* scanTypeThreeWaySwitch)
 {
   addChunk(new BatteryChunk(2500));
   addChunk(new WiFiChunk(wifiService, 1000));
@@ -20,4 +21,5 @@ SplashScreen::SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiF
   addChunk(wifiScanner->chunk);
   addChunk(bluetoothScanner->chunk);
   addChunk(new ModeChunk(modeThreeWaySwitch, 100));
+  addChunk(new ScanTypeChunk(scanTypeThreeWaySwitch, 100));
 }

@@ -11,7 +11,7 @@
 class SplashScreen : public Page
 {
 public:
-  SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiFiScanner *wifiScanner, BluetoothScanner* bluetoothScanner, ThreeWaySwitch* modeThreeWaySwitch);
+  SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiFiScanner *wifiScanner, BluetoothScanner* bluetoothScanner, ThreeWaySwitch* modeThreeWaySwitch, ThreeWaySwitch* scanTypeThreeWaySwitch);
 };
 
 #endif

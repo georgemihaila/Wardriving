@@ -28,6 +28,7 @@ API *_api;
 SDCard *_sdCard;
 DataManager *_dataManager;
 ThreeWaySwitch *_modeThreeWaySwitch = new ThreeWaySwitch(21, 22, HIGH);
+ThreeWaySwitch* _scanTypeThreeWaySwitch = new ThreeWaySwitch(17, 2, LOW);
 
 void autosendIfHomeAfterStartup()
 {
@@ -50,11 +51,11 @@ void initializeServices()
   _wifiService = new WiFiService();
   _wifiScanner = new WiFiScanner();
   _bluetoothScanner = new BluetoothScanner();
-  _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner, _bluetoothScanner, _modeThreeWaySwitch);
+  _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner, _bluetoothScanner, _modeThreeWaySwitch, _scanTypeThreeWaySwitch);
   _sdCard = new SDCard();
   _api = new API("http://10.10.0.241:6488/");
   _dataManager = new DataManager(_sdCard, _gpsService, _api);
-  _scanService = new ScanService(_wifiScanner, _bluetoothScanner, _gpsService, _dataManager, autosendIfHomeAfterStartup, _modeThreeWaySwitch);
+  _scanService = new ScanService(_wifiScanner, _bluetoothScanner, _gpsService, _dataManager, autosendIfHomeAfterStartup, _modeThreeWaySwitch, _scanTypeThreeWaySwitch);
 }
 
 void setup()

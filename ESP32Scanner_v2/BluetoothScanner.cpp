@@ -30,8 +30,8 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
     BluetoothDevice device;
     device.name = String(advertisedDevice.getName().c_str());
     device.address = String(advertisedDevice.getAddress().toString().c_str());
-    //device.manufacturerData = String(advertisedDevice.getManufacturerData().c_str());
-    device.serviceUUID = filterOutNonASCIICharacters(advertisedDevice.getServiceUUID().toString().c_str());
+    device.manufacturerData = String(advertisedDevice.getManufacturerData().c_str());
+    //device.serviceUUID = filterOutNonASCIICharacters(advertisedDevice.getServiceUUID().toString().c_str());
     _btDevices.push_back(device);
   }
 };

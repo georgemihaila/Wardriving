@@ -39,7 +39,6 @@ void ScanService::scan()
 
       // Don't do BT scans if we're moving relatively fast, we care more about WiFi
       if (_gpsService->speedMetersPerSecond < 5)
-      //if (false)
       {
         _currentScan = BT;
         _bluetoothScanner->scanAsync();
