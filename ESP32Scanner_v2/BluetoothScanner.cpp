@@ -4,24 +4,42 @@ using namespace std;
 #include "BluetoothScanner.h"
 #include "BLEDevice.h"
 #include "BLEAdvertisedDevice.h"
+#include <ctype.h>
 
 bool _isScanRunning;
 vector<BluetoothDevice> _btDevices;
 
-class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
-	void onResult(BLEAdvertisedDevice advertisedDevice) {
+String filterOutNonASCIICharacters(const char *s)
+{
+  String result = "";
+  for (int i = 0; i < strlen(s); i++)
+  {
+    if (isAscii(s[i]))
+    {
+      result += s[i];
+    }
+  }
+
+  return result;
+}
+
+class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
+{
+  void onResult(BLEAdvertisedDevice advertisedDevice)
+  {
     BluetoothDevice device;
     device.name = String(advertisedDevice.getName().c_str());
     device.address = String(advertisedDevice.getAddress().toString().c_str());
-    device.manufacturerData = String(advertisedDevice.getManufacturerData().c_str());
-    device.serviceUUID = String(advertisedDevice.getServiceUUID().toString().c_str());
+    //device.manufacturerData = String(advertisedDevice.getManufacturerData().c_str());
+    device.serviceUUID = filterOutNonASCIICharacters(advertisedDevice.getServiceUUID().toString().c_str());
     _btDevices.push_back(device);
-	}
+  }
 };
 
-static void callback(BLEScanResults scanResults) {
+static void callback(BLEScanResults scanResults)
+{
   _isScanRunning = false;
-	scanResults.dump();
+  scanResults.dump();
 }
 
 void BluetoothScanner::scanAsync()

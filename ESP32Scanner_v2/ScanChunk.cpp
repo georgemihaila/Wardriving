@@ -1,6 +1,15 @@
 #include "ScanChunk.h"
 #include "Arduino.h"
 
+String formatLargeNumber(unsigned long n)
+{
+  if (n < 1000)
+    return String(n);
+  if (n < 1000000)
+    return String(n / 1000) + "." + String(((n * 100) % 1000) / 100) + "k";
+  return String((n / 1000000)) + "." + String(((n * 100000) % 1000000) / 100000) + "m";
+}
+
 bool ScanChunk::hasUpdate()
 {
   return _lastRefreshedAtTotalScans != totalScans; // Called when a new scan is completed
@@ -15,8 +24,8 @@ void ScanChunk::update(TFT_eSPI *tft)
   graph(tft);
   printAt(tft, dataType, _left, _top + 2);
   printAt(tft, String(newNetworks) + "/" + String(networksAround) + "/" + String(totalNetworks), _left, _top + 2 + 20);
-  //printAt(tft, lastScanTimeMs + "ms", 0, _top + _height - 12);
-  // tft->drawLine(0, _top + _height, 30, _top + _height, TFT_WHITE);
+  // printAt(tft, lastScanTimeMs + "ms", 0, _top + _height - 12);
+  //  tft->drawLine(0, _top + _height, 30, _top + _height, TFT_WHITE);
   _lastRefreshedAtTotalScans = totalScans;
 }
 
@@ -69,7 +78,7 @@ double ScanChunk::customMap(double x, double in_min, double in_max, double out_m
 
 void ScanChunk::graph(TFT_eSPI *tft, int data[], int count, int yOffset, bool invertVertically, int min, int max, int height)
 {
-  if (min == max) //no data, don't try do do anything
+  if (min == max) // no data, don't try do do anything
     return;
 
   int graphBottom = yOffset + height;
@@ -94,8 +103,9 @@ void ScanChunk::graph(TFT_eSPI *tft, int data[], int count, int yOffset, bool in
     {
       tft->fillRect(x1, graphBottom - 5, rectWidth, 5, TFT_BLUE);
     }
-    
-    if (rectWidth >= 4){
+
+    if (rectWidth >= 4)
+    {
       tft->drawLine(x1, _top, x1, graphBottom, TFT_BLACK);
       tft->drawLine(x1 + rectWidth, _top, x1 + rectWidth, graphBottom, TFT_BLACK);
     }
