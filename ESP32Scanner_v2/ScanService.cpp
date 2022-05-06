@@ -18,7 +18,7 @@ void ScanService::scan()
       _wifiScanner->chunk->totalScans++;
 
       vector<WiFiNetwork> networks = _wifiScanner->getResults();
-      int newWiFis = _dataManager->saveNewEntries(networks);
+      int newWiFis = _dataManager->saveNewEntries(networks, _modeThreeWaySwitch->getState() == 2);
       _wifiScanner->chunk->addNSatellites(_gpsService->nSatellites);
       _wifiScanner->chunk->newNetworks = newWiFis;
       _wifiScanner->chunk->totalNetworks += newWiFis;
@@ -38,7 +38,7 @@ void ScanService::scan()
       }
 
       // Don't do BT scans if we're moving relatively fast, we care more about WiFi
-      if (_gpsService->speedMetersPerSecond < 5)
+      if (_gpsService->speedMetersPerSecond < 5 && _scanTypeThreeWaySwitch->getState() != 2)
       {
         _currentScan = BT;
         _bluetoothScanner->scanAsync();
@@ -57,7 +57,7 @@ void ScanService::scan()
       
       vector<BluetoothDevice> devices = _bluetoothScanner->getResults();
       _bluetoothScanner->chunk->networksAround = devices.size();
-      int newBTs = _dataManager->saveNewEntries(devices);
+      int newBTs = _dataManager->saveNewEntries(devices, _modeThreeWaySwitch->getState() == 2);
       _bluetoothScanner->chunk->addNSatellites(_gpsService->nSatellites); // Maybe we could not use two arrays
       _bluetoothScanner->chunk->newNetworks = newBTs;
       _bluetoothScanner->chunk->totalNetworks += newBTs;

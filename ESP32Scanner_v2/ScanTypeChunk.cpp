@@ -5,14 +5,14 @@
 
 void ScanTypeChunk::update(TFT_eSPI *tft)
 {
-    String s = "W   ";
+    String s = "B   ";
     switch (_threeWaySwitch->getState())
     {
     case 1:
         s = "W+B";
         break;
     case 2:
-        s = "B   ";
+        s = "W   ";
         break;
     }
     tft->setTextSize(1);

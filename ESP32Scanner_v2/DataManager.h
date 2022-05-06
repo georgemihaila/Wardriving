@@ -22,8 +22,8 @@ public:
         _sdCard->createDir("/WiFi/");
         _sdCard->createDir("/Bluetooth/");
     }
-    int saveNewEntries(vector<WiFiNetwork> networks);
-    int saveNewEntries(vector<BluetoothDevice> devices);
+    int saveNewEntries(vector<WiFiNetwork> networks, bool noLog);
+    int saveNewEntries(vector<BluetoothDevice> devices, bool noLog);
     void sendCollectedDataToServer(TFTDisplay *display);
     void listDir(fs::FS &fs, const char * dirname, uint8_t levels);
     Config getConfig();
@@ -50,8 +50,8 @@ private:
     void incrementCurrentlyCachedIfNotFull(int &count);
     bool listHasElement(String list[CACHE_SIZE], int size, String s);
     void addToCache(String (&cache)[CACHE_SIZE], int &size, String s);
-    int cacheNewEntriesToSD(vector<WiFiNetwork> networks);
-    int cacheNewEntriesToSD(vector<BluetoothDevice> devices);
+    int cacheNewEntriesToSD(vector<WiFiNetwork> networks, bool noLog);
+    int cacheNewEntriesToSD(vector<BluetoothDevice> devices, bool noLog);
 };
 
 #endif
