@@ -67,7 +67,9 @@ void ScanService::scan()
       _wifiScanner->scanAsync();
     }
   }
-  _cacheTotalNumberOfDevices();
+  if (_modeThreeWaySwitch->getState() != 2){
+    _cacheTotalNumberOfDevices();
+  }
 }
 
 void ScanService::_cacheTotalNumberOfDevices()
