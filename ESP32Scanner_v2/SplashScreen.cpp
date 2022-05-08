@@ -11,6 +11,7 @@
 #include "ThreeWaySwitch.h"
 #include "ModeChunk.h"
 #include "ScanTypeChunk.h"
+#include "FrameTimeChunk.h"
 
 SplashScreen::SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiFiScanner *wifiScanner, BluetoothScanner* bluetoothScanner, ThreeWaySwitch* modeThreeWaySwitch, ThreeWaySwitch* scanTypeThreeWaySwitch)
 {
@@ -22,4 +23,5 @@ SplashScreen::SplashScreen(GPSService *gpsService, WiFiService *wifiService, WiF
   addChunk(bluetoothScanner->chunk);
   addChunk(new ModeChunk(modeThreeWaySwitch, 100));
   addChunk(new ScanTypeChunk(scanTypeThreeWaySwitch, 100));
+  addChunk(new FrameTimeChunk(1000 / 30));
 }

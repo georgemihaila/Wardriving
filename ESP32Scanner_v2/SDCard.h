@@ -8,6 +8,7 @@
 #include "API.h"
 #include <vector>
 using namespace std;
+#include "FileCache.h"
 
 class SDCard
 {
@@ -27,6 +28,7 @@ public:
     bool renameFile(const char * path1, const char * path2);
     vector<String> listDir(const char *dirname, uint8_t levels);
     String readFile(String filename);
+    File getFileForAppend(String path);
 
 private:
     SPIClass *_sdspi;

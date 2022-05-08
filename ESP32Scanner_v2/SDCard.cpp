@@ -19,13 +19,27 @@ void SDCard::appendFile(String path, String message)
     appendFile(path.c_str(), message.c_str());
 }
 
+File SDCard::getFileForAppend(String path)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        File f = SD.open(path, FILE_APPEND);
+        if (f)
+        {
+            return f;
+        }
+    }
+    Serial.println("Failed to open file for appending [getFileForAppend(...)]");
+    ESP.restart();
+}
+
 void SDCard::appendFile(const char *path, const char *message)
 {
     int errorCount = 0;
     bool ok = false;
     do
     {
-        File file = SD.open(path, FILE_APPEND);
+        File file = SD.open(path, FILE_APPEND);// fileCache.getFileForAppend(SD, path);
         if (!file)
         {
             Serial.println("Failed to open file for appending");

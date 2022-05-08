@@ -80,6 +80,7 @@ void DataManager::incrementCurrentlyCachedIfNotFull(int &count)
 int DataManager::cacheNewEntriesToSD(vector<WiFiNetwork> networks, bool noLog = false)
 {
     int added = 0;
+    File file = _sdCard->getFileForAppend(getChunkFileName(WIFI_FILENAME));
     for (int i = 0; i < networks.size(); i++)
     {
         if (!listHasElement(_wifiChunkCache, _currentlyCachedWifi, networks[i].BSSID))
@@ -87,19 +88,21 @@ int DataManager::cacheNewEntriesToSD(vector<WiFiNetwork> networks, bool noLog = 
             String s = networks[i].toString() + ',' + _gpsService->generateLocationCSV();
             if (!noLog)
             {
-              _sdCard->appendFile(getChunkFileName(WIFI_FILENAME), s);
+                file.println(s);
             }
             //_sdCard->appendFile(WIFI_FILENAME, s);
             addToCache(_wifiChunkCache, _currentlyCachedWifi, networks[i].BSSID);
             added++;
         }
     }
+    file.close();
     return added;
 }
 
-int DataManager::cacheNewEntriesToSD(vector<BluetoothDevice> devices,  bool noLog = false)
+int DataManager::cacheNewEntriesToSD(vector<BluetoothDevice> devices, bool noLog = false)
 {
     int added = 0;
+    File file = _sdCard->getFileForAppend(getChunkFileName(BT_FILENAME));
     for (int i = 0; i < devices.size(); i++)
     {
         if (!listHasElement(_btChunkCache, _currentlyCachedBluetooth, devices[i].address))
@@ -107,13 +110,14 @@ int DataManager::cacheNewEntriesToSD(vector<BluetoothDevice> devices,  bool noLo
             String s = _gpsService->generateLocationCSV() + "," + devices[i].toString();
             if (!noLog)
             {
-              _sdCard->appendFile(getChunkFileName(BT_FILENAME), s);
+                file.println(s);
             }
             //_sdCard->appendFile(BT_FILENAME, s);
             addToCache(_btChunkCache, _currentlyCachedBluetooth, devices[i].address);
             added++;
         }
     }
+    file.close();
     return added;
 }
 
@@ -135,6 +139,12 @@ Config DataManager::getConfig()
     StaticJsonDocument<96> doc;
 
     input.trim();
+    if (input.equals(""))
+    {
+        Serial.println("Config file blank, creating a new one");
+        setNumberOfTotalDevicesFound(53150, 38100);
+        return getConfig();
+    }
     Serial.println("JSON config file: |" + input + "|");
     DeserializationError error = deserializeJson(doc, input);
     Config result;
@@ -142,9 +152,9 @@ Config DataManager::getConfig()
     {
         Serial.print("deserializeJson() failed: ");
         Serial.println(error.c_str());
-        setNumberOfTotalDevicesFound(5217, 5258);
-        result.totalWiFiNetworks = 5217;
-        result.totalBluetoothDevices = 5258;
+        setNumberOfTotalDevicesFound(53150, 38000);
+        result.totalWiFiNetworks = 53150;
+        result.totalBluetoothDevices = 38000;
     }
     else
     {
