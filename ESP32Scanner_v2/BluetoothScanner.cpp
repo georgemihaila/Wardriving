@@ -53,7 +53,7 @@ void BluetoothScanner::scanAsync()
   pBLEScan->start(1, callback);
 }
 
-vector<BluetoothDevice> BluetoothScanner-::getResults()
+vector<BluetoothDevice> BluetoothScanner::getResults()
 {
   return _btDevices;
 }

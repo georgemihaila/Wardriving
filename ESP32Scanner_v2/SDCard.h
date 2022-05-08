@@ -8,7 +8,6 @@
 #include "API.h"
 #include <vector>
 using namespace std;
-#include "FileCache.h"
 
 class SDCard
 {
