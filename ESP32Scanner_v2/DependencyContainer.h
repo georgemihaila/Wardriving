@@ -17,15 +17,12 @@
 #include "ThreeWaySwitch.h"
 #include "BluetoothService.h"
 
-#define NORMAL 1
-#define QUICKSTART 0
-#define NOLOG 2
 #include "Arduino.h"
 
 class DependencyContainer
 {
 public:
-    DependencyContainer()
+    DependencyContainer(void (*_autosendFunction)())
     {
         display = new TFTDisplay();
         gpsService = new GPSService();
@@ -36,7 +33,7 @@ public:
         sdCard = new SDCard();
         api = new API("http://10.10.0.241:6488/");
         dataManager = new DataManager(sdCard, gpsService, api);
-        scanService = new ScanService(wifiScanner, bluetoothScanner, gpsService, dataManager, autosendIfHomeAfterStartup, modeThreeWaySwitch, scanTypeThreeWaySwitch);
+        scanService = new ScanService(wifiScanner, bluetoothScanner, gpsService, dataManager, _autosendFunction, modeThreeWaySwitch, scanTypeThreeWaySwitch);
     }
     TFTDisplay *display;
     GPSService *gpsService;
