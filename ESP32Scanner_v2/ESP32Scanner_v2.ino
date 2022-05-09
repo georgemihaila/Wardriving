@@ -1,61 +1,22 @@
-#include "TFTDisplay.h"
-#include "Page.h"
-#include "SplashScreen.h"
-#include "LEDBlinker.h"
-#include "GPSService.h"
-#include "WiFiService.h"
-#include "WiFiScanner.h"
-#include "BluetoothScanner.h"
-#include "ScanService.h"
-#include "API.h"
-#include "SDCard.h"
-#include "DataManager.h"
-#include "Config.h"
-#include "ThreeWaySwitch.h"
+#include "DependencyContainer.h"
 
 #define NORMAL 1
-#define QUICK_START 0
-#define NO_LOG 2
+#define QUICKSTART 0
+#define NOLOG 2
 
-TFTDisplay *_display;
-GPSService *_gpsService;
-WiFiService *_wifiService;
-WiFiScanner *_wifiScanner;
-SplashScreen *_splashScreen;
-BluetoothScanner *_bluetoothScanner;
-ScanService *_scanService;
-API *_api;
-SDCard *_sdCard;
-DataManager *_dataManager;
-ThreeWaySwitch *_modeThreeWaySwitch = new ThreeWaySwitch(21, 22, HIGH);
-ThreeWaySwitch* _scanTypeThreeWaySwitch = new ThreeWaySwitch(17, 2, LOW);
+DependencyContainer *_dependencyContainer;
 
 void autosendIfHomeAfterStartup()
 {
-  if (_wifiService->offlineMode)
+  if (_dependencyContainer->wifiService->offlineMode)
     return;
 
-  if (_wifiService->initWiFi(0))
+  if (_dependencyContainer->wifiService->initWiFi(0))
   {
-    _api->createNewSession();
-    _dataManager->sendCollectedDataToServer(_display);
-    _wifiService->disconnect();
+    _dependencyContainer->api->createNewSession();
+    _dependencyContainer->dataManager->sendCollectedDataToServer(_dependencyContainer->display);
+    _dependencyContainer->wifiService->disconnect();
   }
-}
-
-// Use this because some methods use serial before Serial.begin(...)
-void initializeServices()
-{
-  _display = new TFTDisplay();
-  _gpsService = new GPSService();
-  _wifiService = new WiFiService();
-  _wifiScanner = new WiFiScanner();
-  _bluetoothScanner = new BluetoothScanner();
-  _splashScreen = new SplashScreen(_gpsService, _wifiService, _wifiScanner, _bluetoothScanner, _modeThreeWaySwitch, _scanTypeThreeWaySwitch);
-  _sdCard = new SDCard();
-  _api = new API("http://10.10.0.241:6488/");
-  _dataManager = new DataManager(_sdCard, _gpsService, _api);
-  _scanService = new ScanService(_wifiScanner, _bluetoothScanner, _gpsService, _dataManager, autosendIfHomeAfterStartup, _modeThreeWaySwitch, _scanTypeThreeWaySwitch);
 }
 
 void setup()
@@ -64,36 +25,36 @@ void setup()
   // esp_log_level_set("*", ESP_LOG_DEBUG);
   ESP_LOGI("*", "ESP32 up");
 
-  initializeServices();
-  if (!_sdCard->init())
+  _dependencyContainer = new DependencyContainer();
+  if (!_dependencyContainer->sdCard->init())
   {
-    _display->printAt("SD card error", 0, 20);
+    _dependencyContainer->display->printAt("SD card error", 0, 20);
     delay(1000);
     ESP.restart();
   }
   else
   {
-    _display->printAt("SD OK", 0, 20);
-    _display->printAt("Usage: " + _sdCard->getUsedSpace(), 0, 40);
+    _dependencyContainer->display->printAt("SD OK", 0, 20);
+    _dependencyContainer->display->printAt("Usage: " + _dependencyContainer->sdCard->getUsedSpace(), 0, 40);
   }
   Serial.println("Mode: " + String(_modeThreeWaySwitch->getState()));
   if (_modeThreeWaySwitch == QUICK_START)
   {
-    _wifiService->offlineMode = true;
+    _dependencyContainer->wifiService->offlineMode = true;
   }
 
-  Config config = _dataManager->getConfig();
+  Config config = _dependencyContainer->dataManager->getConfig();
   int prevWiFi = config.totalWiFiNetworks;
   int prevBT = config.totalBluetoothDevices;
-  _scanService->setPreviousScanCounts(prevWiFi, prevBT);
+  _dependencyContainer->scanService->setPreviousScanCounts(prevWiFi, prevBT);
   Serial.println("Previous WIFI: " + String(prevWiFi));
   Serial.println("Previous BT: " + String(prevBT));
-  _display->clear();
+  _dependencyContainer->display->clear();
 }
 
 void loop()
 {
-  _display->render(_splashScreen);
-  _gpsService->update();
-  _scanService->scan();
+  _dependencyContainer->display->render(_splashScreen);
+  _dependencyContainer->gpsService->update();
+  _dependencyContainer->scanService->scan();
 }

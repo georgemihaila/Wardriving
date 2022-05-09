@@ -18,7 +18,7 @@ public:
   {
     chunk = new ScanChunk("Bluetooth", 135, 240 / 2 - 20, 0, 120 + 20);
 
-    BLEDevice::init("ESP32 Scanner");
+    BLEDevice::init("ESP32 WD");
     pBLEScan = BLEDevice::getScan(); //create new scan
     pBLEScan->setActiveScan(true); //active scan uses more power, but get results faster
     pBLEScan->setInterval(100);

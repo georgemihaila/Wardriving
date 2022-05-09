@@ -152,9 +152,9 @@ Config DataManager::getConfig()
     {
         Serial.print("deserializeJson() failed: ");
         Serial.println(error.c_str());
-        setNumberOfTotalDevicesFound(53150, 38000);
+        setNumberOfTotalDevicesFound(53150, 38100);
         result.totalWiFiNetworks = 53150;
-        result.totalBluetoothDevices = 38000;
+        result.totalBluetoothDevices = 38100;
     }
     else
     {
