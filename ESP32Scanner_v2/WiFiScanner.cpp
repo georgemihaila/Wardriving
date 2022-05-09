@@ -52,7 +52,7 @@ vector<WiFiNetwork> WiFiScanner::getResults()
   if (scanCompleted())
   {
     int n = WiFi.scanComplete();
-    chunk->networksAround = n;
+    chunk->devicesAround = n;
     for (int i = 0; i < n; ++i)
     {
       WiFiNetwork network;

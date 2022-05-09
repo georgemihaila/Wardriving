@@ -22,9 +22,9 @@ public:
   };
   virtual bool hasUpdate();
   virtual void update(TFT_eSPI *tft);
-  unsigned long int networksAround = 0;
-  unsigned long int newNetworks = 0;
-  unsigned long int totalNetworks = 0;
+  unsigned long int devicesAround = 0;
+  unsigned long int newDevices = 0;
+  unsigned long int totalDevices = 0;
   unsigned long int totalScans = 0;
   unsigned long int lastScanTimeMs = 0;
   String dataType;

@@ -28,8 +28,8 @@ public:
   void scan();
   void setPreviousScanCounts(int wifi, int bt)
   {
-    _wifiScanner->chunk->totalNetworks = wifi;
-    _bluetoothScanner->chunk->totalNetworks = bt;
+    _wifiScanner->chunk->totalDevices = wifi;
+    _bluetoothScanner->chunk->totalDevices = bt;
   }
 private:
   int _currentScan = 0;

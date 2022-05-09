@@ -20,8 +20,8 @@ void ScanService::scan()
       vector<WiFiNetwork> networks = _wifiScanner->getResults();
       int newWiFis = _dataManager->saveNewEntries(networks, _modeThreeWaySwitch->getState() == 2);
       _wifiScanner->chunk->addNSatellites(_gpsService->nSatellites);
-      _wifiScanner->chunk->newNetworks = newWiFis;
-      _wifiScanner->chunk->totalNetworks += newWiFis;
+      _wifiScanner->chunk->newDevices = newWiFis;
+      _wifiScanner->chunk->totalDevices += newWiFis;
       _wifiScanner->chunk->lastScanTimeMs = _wifiScanner->getTimeSinceLastScanStarted();
 
       // Autosend if home after first scan, don't try again otherwise. Should speed up boot time significantly
@@ -56,11 +56,11 @@ void ScanService::scan()
       _bluetoothScanner->chunk->totalScans++;
       
       vector<BluetoothDevice> devices = _bluetoothScanner->getResults();
-      _bluetoothScanner->chunk->networksAround = devices.size();
+      _bluetoothScanner->chunk->devicesAround = devices.size();
       int newBTs = _dataManager->saveNewEntries(devices, _modeThreeWaySwitch->getState() == 2);
       _bluetoothScanner->chunk->addNSatellites(_gpsService->nSatellites); // Maybe we could not use two arrays
-      _bluetoothScanner->chunk->newNetworks = newBTs;
-      _bluetoothScanner->chunk->totalNetworks += newBTs;
+      _bluetoothScanner->chunk->newDevices = newBTs;
+      _bluetoothScanner->chunk->totalDevices += newBTs;
       _bluetoothScanner->chunk->lastScanTimeMs = _bluetoothScanner->getTimeSinceLastScanStarted();
 
       _currentScan = WIFI;
@@ -76,10 +76,10 @@ void ScanService::_cacheTotalNumberOfDevices()
 {
   if (millis() - _lastTotalNumberOfScansCacheTimestamp >= _cacheTotalNumberOfDevicesEvery)
   {
-    if (_lastCachedAtWifi != _wifiScanner->chunk->totalNetworks && _lastCachedAtBT != _bluetoothScanner->chunk->totalNetworks)
+    if (_lastCachedAtWifi != _wifiScanner->chunk->totalDevices && _lastCachedAtBT != _bluetoothScanner->chunk->totalDevices)
     { // Don't write to SD unless new devices found
-      _lastCachedAtWifi = _wifiScanner->chunk->totalNetworks;
-      _lastCachedAtBT = _bluetoothScanner->chunk->totalNetworks;
+      _lastCachedAtWifi = _wifiScanner->chunk->totalDevices;
+      _lastCachedAtBT = _bluetoothScanner->chunk->totalDevices;
       _dataManager->setNumberOfTotalDevicesFound(_lastCachedAtWifi, _lastCachedAtBT);
       // Serial.println("Updated total number of scans");
     }

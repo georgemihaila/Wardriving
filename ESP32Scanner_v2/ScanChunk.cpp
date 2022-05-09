@@ -17,13 +17,13 @@ bool ScanChunk::hasUpdate()
 
 void ScanChunk::update(TFT_eSPI *tft)
 {
-  appendLastElement(networksAround); // Assume only drawn ONCE, when a scan is completed
+  appendLastElement(devicesAround); // Assume only drawn ONCE, when a scan is completed
 
   // tft->drawLine(0, _top, 30, _top, TFT_WHITE);
 
   graph(tft);
   printAt(tft, dataType, _left, _top + 2);
-  printAt(tft, String(newNetworks) + "/" + String(networksAround) + "/" + String(totalNetworks), _left, _top + 2 + 20);
+  printAt(tft, String(newDevices) + "/" + String(devicesAround) + "/" + String(totalDevices), _left, _top + 2 + 20);
   // printAt(tft, lastScanTimeMs + "ms", 0, _top + _height - 12);
   //  tft->drawLine(0, _top + _height, 30, _top + _height, TFT_WHITE);
   _lastRefreshedAtTotalScans = totalScans;
