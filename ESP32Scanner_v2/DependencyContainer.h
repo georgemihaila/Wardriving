@@ -8,7 +8,7 @@
 #include "GPSService.h"
 #include "WiFiService.h"
 #include "WiFiScanner.h"
-#include "Scanning/Bluetooth/BluetoothScanner.h"
+#include "BluetoothScanner.h"
 #include "ScanService.h"
 #include "API.h"
 #include "SDCard.h"
