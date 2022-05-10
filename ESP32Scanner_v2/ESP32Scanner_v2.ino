@@ -4,18 +4,18 @@
 #define QUICK_START 0
 #define NOLOG 2
 
-DependencyContainer *_dependencyContainer;
+DependencyContainer *_dc;
 
 void autosendIfHomeAfterStartup()
 {
-  if (_dependencyContainer->wifiService->offlineMode)
+  if (_dc->wifiService->offlineMode)
     return;
 
-  if (_dependencyContainer->wifiService->initWiFi(0))
+  if (_dc->wifiService->initWiFi(0))
   {
-    _dependencyContainer->api->createNewSession();
-    _dependencyContainer->dataManager->sendCollectedDataToServer(_dependencyContainer->display);
-    _dependencyContainer->wifiService->disconnect();
+    _dc->api->createNewSession();
+    _dc->dataManager->sendCollectedDataToServer(_dc->display);
+    _dc->wifiService->disconnect();
   }
 }
 
@@ -25,36 +25,40 @@ void setup()
   // esp_log_level_set("*", ESP_LOG_DEBUG);
   ESP_LOGI("*", "ESP32 up");
 
-  _dependencyContainer = new DependencyContainer(autosendIfHomeAfterStartup);
-  if (!_dependencyContainer->sdCard->init())
+  _dc = new DependencyContainer(autosendIfHomeAfterStartup);
+  if (!_dc->sdCard->init())
   {
-    _dependencyContainer->display->printAt("SD card error", 0, 20);
+    _dc->display->printAt("SD card error", 0, 20);
     delay(1000);
     ESP.restart();
   }
   else
   {
-    _dependencyContainer->display->printAt("SD OK", 0, 20);
-    _dependencyContainer->display->printAt("Usage: " + _dependencyContainer->sdCard->getUsedSpace(), 0, 40);
+    _dc->display->printAt("SD OK", 0, 20);
+    _dc->display->printAt("Usage: " + _dc->sdCard->getUsedSpace(), 0, 40);
   }
-  Serial.println("Mode: " + String(_dependencyContainer->modeThreeWaySwitch->getState()));
-  if (_dependencyContainer->modeThreeWaySwitch == QUICK_START)
+  Serial.println("Mode: " + String(_dc->modeThreeWaySwitch->getState()));
+  if (_dc->modeThreeWaySwitch == QUICK_START)
   {
-    _dependencyContainer->wifiService->offlineMode = true;
+    _dc->wifiService->offlineMode = true;
   }
 
-  Config config = _dependencyContainer->dataManager->getConfig();
+  Config config = _dc->dataManager->getConfig();
   int prevWiFi = config.totalWiFiNetworks;
   int prevBT = config.totalBluetoothDevices;
-  _dependencyContainer->scanService->setPreviousScanCounts(prevWiFi, prevBT);
+  _dc->scanService->setPreviousScanCounts(prevWiFi, prevBT);
   Serial.println("Previous WIFI: " + String(prevWiFi));
   Serial.println("Previous BT: " + String(prevBT));
-  _dependencyContainer->display->clear();
+  _dc->display->clear();
 }
 
 void loop()
 {
-  _dependencyContainer->display->render(_dependencyContainer->splashScreen);
-  _dependencyContainer->gpsService->update();
-  _dependencyContainer->scanService->scan();
+  _dc->display->render(_dc->splashScreen);
+  _dc->gpsService->update();
+  _dc->scanService->scan();
+  if (_dc->bluetoothService != NULL)
+  {
+    _dc->bluetoothService->yield();
+  }
 }

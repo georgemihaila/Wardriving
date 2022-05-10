@@ -1,51 +1,55 @@
 #ifndef BluetoothService_h_
 #define BluetoothService_h_
 
-#include "Arduino.h"
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
-
-#define SERVICE_UUID "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+#include "BluetoothSerial.h"
+#include "esp_bt_device.h"
 
 class BluetoothService
 {
 public:
     BluetoothService()
     {
-        pServer = BLEDevice::createServer();
-        pService = pServer->createService(SERVICE_UUID);
-        pCharacteristic = pService->createCharacteristic(
-            CHARACTERISTIC_UUID,
-            BLECharacteristic::PROPERTY_READ |
-                BLECharacteristic::PROPERTY_WRITE);
+        SerialBT.begin("ESP32WD"); // Bluetooth device name
 
-        /* BLEServer *pServer = BLEDevice::createServer();
-        BLEService *pService = pServer->createService(SERVICE_UUID);
-        BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-                                               CHARACTERISTIC_UUID,
-                                               BLECharacteristic::PROPERTY_READ |
-                                               BLECharacteristic::PROPERTY_WRITE
-                                             );*/
-
-        pCharacteristic->setValue("Hello, World!");
-        pService->start();
-        // BLEAdvertising *pAdvertising = pServer->getAdvertising();
-        BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-        pAdvertising->addServiceUUID(SERVICE_UUID);
-        pAdvertising->setScanResponse(true);
-        pAdvertising->setMinPreferred(0x06); // functions that help with iPhone connections issue
-        pAdvertising->setMinPreferred(0x12);
-        BLEDevice::startAdvertising();
-        // pAdvertising->start();
-        Serial.println("Characteristic defined! Now you can read it in the Client!");
+        Serial.println("The device started, now you can pair it with bluetooth!");
+        Serial.println("Device Name: ESP32test");
+        Serial.print("BT MAC: ");
+        printDeviceAddress();
+        Serial.println();
     };
+    void printDeviceAddress()
+    {
+
+        const uint8_t *point = esp_bt_dev_get_address();
+
+        for (int i = 0; i < 6; i++)
+        {
+
+            char str[3];
+
+            sprintf(str, "%02X", (int)point[i]);
+            Serial.print(str);
+
+            if (i < 5)
+            {
+                Serial.print(":");
+            }
+        }
+    }
+    void yield()
+    {
+        if (Serial.available())
+        {
+            SerialBT.write(Serial.read());
+        }
+        if (SerialBT.available())
+        {
+            Serial.write(SerialBT.read());
+        }
+    }
 
 private:
-    BLEServer *pServer;
-    BLEService *pService;
-    BLECharacteristic *pCharacteristic;
+    BluetoothSerial SerialBT;
 };
 
 #endif

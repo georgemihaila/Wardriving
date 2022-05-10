@@ -8,7 +8,7 @@
 #include "GPSService.h"
 #include "WiFiService.h"
 #include "WiFiScanner.h"
-#include "BluetoothScanner.h"
+#include "Scanning/Bluetooth/BluetoothScanner.h"
 #include "ScanService.h"
 #include "API.h"
 #include "SDCard.h"
@@ -34,6 +34,10 @@ public:
         api = new API("http://10.10.0.241:6488/");
         dataManager = new DataManager(sdCard, gpsService, api);
         scanService = new ScanService(wifiScanner, bluetoothScanner, gpsService, dataManager, _autosendFunction, modeThreeWaySwitch, scanTypeThreeWaySwitch);
+        if (scanTypeThreeWaySwitch->getState() == 2)
+        {
+            bluetoothService = new BluetoothService();
+        }
     }
     TFTDisplay *display;
     GPSService *gpsService;
@@ -47,6 +51,7 @@ public:
     DataManager *dataManager;
     ThreeWaySwitch *modeThreeWaySwitch = new ThreeWaySwitch(21, 22, HIGH);
     ThreeWaySwitch *scanTypeThreeWaySwitch = new ThreeWaySwitch(17, 2, LOW);
+    BluetoothService* bluetoothService;
 };
 
 #endif
